@@ -47,6 +47,7 @@ declare module '@vue/runtime-core' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     MyDraggable: typeof import('./src/components/MyDraggable/index.vue')['default']
     MyUpload: typeof import('./src/components/MyUpload/index.vue')['default']
+    NoticeBar: typeof import('./src/components/NoticeBar/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./src/components/SvgIcon/index.vue')['default']

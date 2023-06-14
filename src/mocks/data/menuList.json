@@ -133,6 +133,17 @@
         }
       },
       {
+        "path": "dragTask",
+        "name": "DragTask",
+        "component": "func/dragTask/index",
+        "meta": {
+          "title": "拖拽任务",
+          "icon": "menu-function-move",
+          "roles": ["ADMIN"],
+          "isKeepAlive": true
+        }
+      },
+      {
         "path": "imageUpload",
         "name": "ImageUpload",
         "component": "func/imageUpload/index",
