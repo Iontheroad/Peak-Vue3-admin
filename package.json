@@ -22,6 +22,7 @@
     "nprogress": "^0.2.0",
     "path-browserify": "^1.0.1",
     "path-to-regexp": "^6.2.0",
+    "photo-sphere-viewer": "^4.8.1",
     "pinia": "^2.0.32",
     "pinia-plugin-persistedstate": "^3.1.0",
     "qs": "^6.11.0",
