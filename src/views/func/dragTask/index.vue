@@ -1,22 +1,24 @@
 <template>
-  <el-card class="card-box" shadow="hover" header="拖动任务">
-    <NoticeBar
-      text="红色框框为可移动区域❗❗红色框框为可移动区域❗❗"
-      leftIcon="iconfont icon-tongzhi2"
-      rightIcon="ele-ArrowRight"
-      background="#e1faf1"
-      color="#78f000"
-    />
-    <div class="drag-task-box">
-      <div
-        v-for="(todo, index) in todoList"
-        :key="todo.id"
-        :class="`todo todo-${index + 1}`"
-      >
-        <Task :list="todo.list" :group="todo.group" />
+  <div class="drag-task-container">
+    <el-card class="card-box" shadow="hover" header="拖动任务">
+      <NoticeBar
+        text="红色框框为可移动区域❗❗红色框框为可移动区域❗❗"
+        leftIcon="iconfont icon-tongzhi2"
+        rightIcon="ele-ArrowRight"
+        background="#e1faf1"
+        color="#78f000"
+      />
+      <div class="drag-task-box">
+        <div
+          v-for="(todo, index) in todoList"
+          :key="todo.id"
+          :class="`todo todo-${index + 1}`"
+        >
+          <Task :list="todo.list" :group="todo.group" />
+        </div>
       </div>
-    </div>
-  </el-card>
+    </el-card>
+  </div>
 </template>
 <script setup lang="ts" name="DragTask">
 import { reactive, toRefs } from "vue";
@@ -57,31 +59,35 @@ const data = reactive({
 let { todoList } = toRefs(data);
 </script>
 <style lang="scss">
-.card-box {
+.drag-task-container {
   flex: 1;
-}
-.drag-task-box {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-  .todo {
-    min-width: 300px;
-    height: 100px;
-    height: 340px;
-    padding: 10px 10px 100px;
+  .card-box {
+    height: 100%;
+  }
+  .drag-task-box {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    .todo {
+      width: 300px;
+      height: 340px;
+      padding: 10px 10px 100px;
+      margin: 10px;
 
-    overflow-y: auto;
-    background: #f0f0f0;
-    border-radius: 3px;
-  }
-  .todo-1 {
-    background: #4a9ff9;
-  }
-  .todo-2 {
-    background: #f9944a;
-  }
-  .todo-3 {
-    background: #2ac06d;
+      overflow-y: auto;
+      background: #f0f0f0;
+      border-radius: 3px;
+    }
+    .todo-1 {
+      background: #4a9ff9;
+    }
+    .todo-2 {
+      background: #f9944a;
+    }
+    .todo-3 {
+      background: #2ac06d;
+    }
   }
 }
 </style>
