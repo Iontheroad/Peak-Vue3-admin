@@ -58,13 +58,13 @@ export default {
     let isShowSidebar = ref(false); // 控制侧边框显示隐藏
     let panoramaArr = [
       {
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0ebbea0343bf44d2aabab3dc58aa4c3a~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://img2.baidu.com/it/u=332489680,4189766700&fm=253&fmt=auto&app=138&f=JPEG?w=863&h=315",
       },
       {
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6df92ba39aa94aec889582df60d3d0d0~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://img0.baidu.com/it/u=3847874910,4155731130&fm=253&fmt=auto&app=138&f=JPEG?w=1378&h=500",
       },
       {
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/40135df7df034eb5a76daa76f26fe046~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://i1.3conline.com/images/piclib/201202/20/batch/1/126860/1329670312631ifi0c11utn.jpg",
       },
     ]; // 全景图
 

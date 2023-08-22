@@ -175,36 +175,29 @@
           "roles": ["ADMIN"],
           "isKeepAlive": true
         }
-      },
+      }
+    ]
+  },
+  {
+    "path": "/panorama",
+    "name": "Panorama",
+    "component": "Layout",
+    "redirect": "/panorama/photo-sphere-viewer",
+    "meta": {
+      "title": "360全景",
+      "icon": "menu-panorama",
+      "roles": ["ADMIN"],
+      "isAlwaysShow": true,
+      "isKeepAlive": true
+    },
+    "children": [
       {
-        "path": "/func/panorama",
-        "name": "Panorama",
-        "component": "func/panorama/index",
+        "path": "/panorama/photo-sphere-viewer",
+        "name": "PhotoSphereViewer",
+        "component": "panorama/photoSphereViewer/index",
         "meta": {
-          "title": "全景图",
-          "icon": "menu-function-move",
-          "roles": ["ADMIN"],
-          "isKeepAlive": true
-        }
-      },
-      {
-        "path": "/func/panorama1",
-        "name": "Panorama1",
-        "component": "func/panorama/indexCopy1",
-        "meta": {
-          "title": "全景图1",
-          "icon": "menu-function-move",
-          "roles": ["ADMIN"],
-          "isKeepAlive": true
-        }
-      },
-      {
-        "path": "/func/panorama2",
-        "name": "Panorama2",
-        "component": "func/panorama/indexCopy2",
-        "meta": {
-          "title": "全景图2",
-          "icon": "menu-function-move",
+          "title": "PhotoSphereViewer",
+          "icon": "menu-panorama",
           "roles": ["ADMIN"],
           "isKeepAlive": true
         }
