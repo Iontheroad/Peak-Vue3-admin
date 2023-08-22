@@ -11,6 +11,7 @@
         :class="leftIcon"
       ></i>
       <div class="notice-bar-warp-text-box" ref="noticeBarWarpRef">
+        <!-- 滚动区域 -->
         <div
           class="notice-bar-warp-text"
           ref="noticeBarTextRef"
@@ -112,9 +113,11 @@ const initAnimation = () => {
   nextTick(() => {
     state.warpOWidth = noticeBarWarpRef.value.offsetWidth;
     state.textOWidth = noticeBarTextRef.value.offsetWidth;
+    // 第一次初始动画
     document.styleSheets[0].insertRule(
       `@keyframes oneAnimation {0% {left: 0px;} 100% {left: -${state.textOWidth}px;}}`
     );
+    // 后续走这个动画
     document.styleSheets[0].insertRule(
       `@keyframes twoAnimation {0% {left: ${state.warpOWidth}px;} 100% {left: -${state.textOWidth}px;}}`
     );
@@ -124,13 +127,18 @@ const initAnimation = () => {
     }, props.delay * 1000);
   });
 };
+
 // 计算 animation 滚动时长
 const computeAnimationTime = () => {
   state.oneTime = state.textOWidth / props.speed;
   state.twoTime = (state.textOWidth + state.warpOWidth) / props.speed;
 };
-// 改变 animation 动画调用
+
+/**
+ * 改变 animation 动画调用
+ */
 const changeAnimation = () => {
+  if (!noticeBarTextRef.value) return true; // 此处dom获取不到拦截
   if (state.order === 1) {
     noticeBarTextRef.value.style.cssText = `animation: oneAnimation ${state.oneTime}s linear; opactity: 1;}`;
     state.order = 2;
@@ -138,7 +146,10 @@ const changeAnimation = () => {
     noticeBarTextRef.value.style.cssText = `animation: twoAnimation ${state.twoTime}s linear infinite; opacity: 1;`;
   }
 };
-// 监听 animation 动画的结束
+
+/**
+ * 监听 animation 动画的结束
+ */
 const listenerAnimationend = () => {
   noticeBarTextRef.value.addEventListener(
     "animationend",
@@ -148,7 +159,10 @@ const listenerAnimationend = () => {
     false
   );
 };
-// 右侧 icon 图标点击
+
+/**
+ * 右侧 icon 图标点击
+ */
 const onRightIconClick = () => {
   if (!props.mode) return false;
   if (props.mode === "closeable") {
