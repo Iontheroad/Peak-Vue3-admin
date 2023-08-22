@@ -56,17 +56,18 @@ const data = reactive({
 
 let { todoList } = toRefs(data);
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .card-box {
   flex: 1;
+  overflow: unset;
 }
 .drag-task-box {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
   margin-top: 20px;
   .todo {
     min-width: 300px;
-    height: 100px;
     height: 340px;
     padding: 10px 10px 100px;
 
@@ -75,13 +76,13 @@ let { todoList } = toRefs(data);
     border-radius: 3px;
   }
   .todo-1 {
-    background: #4a9ff9;
+    background: linear-gradient(135deg, #fce38a, #f38181);
   }
   .todo-2 {
-    background: #f9944a;
+    background: linear-gradient(135deg, #17ead9, #6078ea);
   }
   .todo-3 {
-    background: #2ac06d;
+    background: linear-gradient(135deg, #42e695, #3bb2b8);
   }
 }
 </style>
