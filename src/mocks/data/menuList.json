@@ -98,6 +98,32 @@
     ]
   },
   {
+    "path": "/directives",
+    "name": "Directives",
+    "component": "Layout",
+    "redirect": "/directives/scrollDirect",
+    "meta": {
+      "title": "自定义指令",
+      "icon": "menu-function",
+      "roles": ["ADMIN"],
+      "isAlwaysShow": true,
+      "isKeepAlive": true
+    },
+    "children": [
+      {
+        "path": "scrollDirect",
+        "name": "ScrollDirect",
+        "component": "directives/scrollDirect/index",
+        "meta": {
+          "title": "无限滚动",
+          "icon": "menu-function-move",
+          "roles": ["ADMIN"],
+          "isKeepAlive": true
+        }
+      }
+    ]
+  },
+  {
     "path": "/func",
     "name": "Func",
     "component": "Layout",
@@ -171,6 +197,17 @@
         "component": "func/forum/index",
         "meta": {
           "title": "讨论区",
+          "icon": "menu-function-move",
+          "roles": ["ADMIN"],
+          "isKeepAlive": true
+        }
+      },
+      {
+        "path": "/func/panorama",
+        "name": "Panorama",
+        "component": "func/panorama/index",
+        "meta": {
+          "title": "全景图",
           "icon": "menu-function-move",
           "roles": ["ADMIN"],
           "isKeepAlive": true
