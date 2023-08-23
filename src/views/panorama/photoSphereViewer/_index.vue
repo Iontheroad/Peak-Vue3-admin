@@ -3,10 +3,9 @@
     <div id="viewer" ref="viewer"></div>
     <ul class="nav">
       <li
-        v-for="(item, index) in panoramaList"
+        v-for="(item, index) in panoramaArr"
         :key="index"
-        :class="{ active: item.id == currentPanoramaId }"
-        @click="clickTogglePanorama(item)"
+        @click="setViewer(item.img)"
       >
         {{ `全景图${index + 1}` }}
       </li>
@@ -23,7 +22,7 @@
 <script lang="ts">
 import { ClickData, Viewer } from "photo-sphere-viewer";
 import "photo-sphere-viewer/dist/photo-sphere-viewer.css";
-import { onMounted, ref } from "vue";
+import { Ref, nextTick, onMounted, reactive, ref } from "vue";
 
 import {
   Marker,
@@ -32,15 +31,20 @@ import {
   SelectMarkerData,
 } from "photo-sphere-viewer/dist/plugins/markers";
 import "photo-sphere-viewer/dist/plugins/markers.css";
-import SidebarMarkerInfo, { type MarkerInfo } from "./SidebarMarkerInfo.vue";
-import { ElMessage } from "element-plus";
+import SidebarMarkerInfo from "./_SidebarMarkerInfo.vue";
 
-type MyMarkerProps = {
-  panoramaId: string | number;
-  markerInfo?: MarkerInfo;
+// 自定义的marker携带的侧边框数据类型
+type MarkerInfo = {
+  id?: string;
+  title?: string;
+  msg?: string;
+  imgList?: {
+    id: number | string;
+    url: string;
+  }[];
 };
 // marker完成的参数
-type MarkerProps = MarkerProperties & MyMarkerProps;
+type MarkerProps = MarkerProperties & { markerInfo?: MarkerInfo };
 
 export default {
   name: "Panorama",
@@ -52,61 +56,55 @@ export default {
     let markersPlugin: MarkersPlugin;
     let sidebarMarkerInfoRef = ref();
     let isShowSidebar = ref(false); // 控制侧边框显示隐藏
-    let panoramaList = [
+    let panoramaArr = [
       {
-        id: 1,
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/0ebbea0343bf44d2aabab3dc58aa4c3a~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://img2.baidu.com/it/u=332489680,4189766700&fm=253&fmt=auto&app=138&f=JPEG?w=863&h=315",
       },
       {
-        id: 2,
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6df92ba39aa94aec889582df60d3d0d0~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://img0.baidu.com/it/u=3847874910,4155731130&fm=253&fmt=auto&app=138&f=JPEG?w=1378&h=500",
       },
       {
-        id: 3,
-        img: "http://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/40135df7df034eb5a76daa76f26fe046~tplv-k3u1fbpfcp-watermark.awebp",
+        img: "https://i1.3conline.com/images/piclib/201202/20/batch/1/126860/1329670312631ifi0c11utn.jpg",
       },
     ]; // 全景图
-    let currentPanoramaId = ref<string | number>(1); // 当前全景图的id
 
-    let markers: MarkerProps[] = [
-      // {
-      //   id: `mark:123456`, // 标记id
-      //   anchor: "center center", // 标记相对点击位置
-      //   html: `<img src="http://119.91.22.164:8085/images/11411538250643115avatar.jpg" />`, // 标记的内容
-      //   longitude: 0.27335309121043694, // 经度
-      //   latitude: 0.03017908389074716, // 纬度
-      //   // tooltip: `我是提示信息`,
-      //   tooltip: {
-      //     content: `我是默认的标记`,
-      //     position: "center top",
-      //   },
-      //   visible: true, // 标注初始显示与否
-      //   panoramaId: 1, // 对应的全景图id
-      //   markerInfo: {
-      //     id: "mark:123456",
-      //     title: "我是默认marker的标题",
-      //     msg: "我是默认marker的信息",
-      //     imgList: [
-      //       {
-      //         id: 1,
-      //         url: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg",
-      //       },
-      //     ],
-      //   },
-      //   // position: { textureX: 945, textureY: 445 },
-      //   // size: { width: 32, height: 32 },
-      //   // zoomLvl: 100,
-      //   // content: document.getElementById("lorem-content").innerHTML,
-      //   // content: `${sidebarMarkerInfoRef.value?.$el.outerHTML}`,
-      // },
-    ];
+    const markers: MarkerProps[] = reactive([
+      {
+        id: `mark:123456`,
+
+        position: { textureX: 945, textureY: 445 },
+        size: { width: 32, height: 32 },
+        zoomLvl: 100,
+        // content: document.getElementById("lorem-content").innerHTML,
+        // content: `${sidebarMarkerInfoRef.value?.$el.outerHTML}`,
+        // tooltip: `我是提示信息`,
+        tooltip: {
+          content: `我是默认的标记`,
+          position: "center top",
+        },
+        visible: true, // 标注初始显示与否
+        html: `<img src="http://119.91.22.164:8085/images/11411538250643115avatar.jpg" />
+            `,
+        longitude: 0.27335309121043694, // 经度
+        latitude: 0.03017908389074716, // 纬度
+        anchor: "center center", // 标记相对点击位置
+        markerInfo: {
+          id: "mark:123456",
+          title: "我是默认marker的标题",
+          msg: "我是默认marker的信息",
+          imgList: [
+            {
+              id: 1,
+              url: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg",
+            },
+          ],
+        },
+      },
+    ]);
 
     onMounted(() => {
-      localStorageGetMarker(currentPanoramaId.value);
-
-      setViewer(panoramaList[0]);
-
-      // markerArr.for
+      setViewer(panoramaArr[0].img);
+      // const markerArr = JSON.parse(localStorage.getItem("markerArr") || "[]");
       // viewer.once("ready", () => {
       //   markerArr.forEach((item: MarkerProperties) => {
       //     markersPlugin.addMarker(item);
@@ -115,24 +113,10 @@ export default {
     });
 
     /**
-     * 点击切换全景图
-     * @param panorama  全景图信息
-     */
-    function clickTogglePanorama(panorama: {
-      id: string | number;
-      img: string;
-    }) {
-      currentPanoramaId.value = panorama.id;
-      localStorageGetMarker(currentPanoramaId.value);
-
-      setViewer(panorama);
-    }
-
-    /**
      * 初始化
-     * @param panoramaId 全景图的id
+     * @param panorama 全景图地址
      */
-    function setViewer(panorama: { id: string | number; img: string }) {
+    function setViewer(panorama: string) {
       if (viewer) {
         try {
           viewer.destroy();
@@ -146,7 +130,7 @@ export default {
       // 初始化
       viewer = new Viewer({
         container: document.querySelector("#viewer") as HTMLElement,
-        panorama: panorama?.img, // 全景图地址
+        panorama, // 全景图地址
         // size: {
         //   width: 886,
         //   height: 554,
@@ -197,47 +181,31 @@ export default {
       selectMarkerEvent: SelectMarkerData
     ) {
       // console.log("select-marker e:", event);
-      // console.log("marker:", marker);
+      console.log("marker:", marker);
       // console.log("selectMarkerEvent:", selectMarkerEvent);
       let { dblclick, rightclick } = selectMarkerEvent;
       if (dblclick) {
         console.log("双击删除");
         markersPlugin.removeMarker(marker.id);
-        // localStorageRemoveMarker(marker.id);
         prevMarkerId = ""; // 删除记录的marker的id(防止下次添加时，该marker已经删除，避免不存在出异常)
         isShowSidebar.value = false; // 关闭侧边信息栏
       } else if (rightclick) {
         console.log("右击");
       } else {
         console.log("单击");
-
-        // 每次单击marker时，上次添加marker未保存 且 点击的是其他marker
-        if (prevMarkerId && prevMarkerId != marker.id) {
-          // 在此处可以判断一下未保存的marker是否输入了内容，如果填写了内容就拦截不清除
-          if (markerInfo.value.title !== "") {
-            ElMessage.warning({
-              message: "侧边栏填写的内容,还未点击保存",
-            });
-
-            return true;
-          } else {
-            // 侧边栏没有输入内容，就删除这个没有保存的marker
-            markersPlugin.removeMarker(prevMarkerId);
-            prevMarkerId = "";
-          }
-        } else if (prevMarkerId && prevMarkerId == marker.id) {
-          // 该marker未保存且填写了内容就拦截
-          if (markerInfo.value.title !== "") {
-            return true;
-          }
-        }
+        /* // 每次单击marker时，判断上次添加marker是否保存,如果没有保存则拦截
+        // if (prevMarkerId) {
+        //   // markersPlugin.removeMarker(prevMarkerId);
+        //   // prevMarkerId = "";
+        //   return;
+        // } */
 
         let config = marker.config as MarkerProps;
-        // console.log(config.markerInfo!);
+        console.log(config.markerInfo!);
 
-        markerOption = { ...config }; // 记录点击的marker信息
-        markerInfo.value = (config.markerInfo as MarkerInfo) || {}; // 填充侧边栏数据
-        isShowSidebar.value = true; // 打开侧边框
+        markerInfo.value = (config.markerInfo as MarkerInfo) || {};
+        // 打开侧边框
+        isShowSidebar.value = true;
       }
 
       // 更新标记
@@ -272,7 +240,6 @@ export default {
 
       let option: MarkerProps = {
         id,
-        panoramaId: currentPanoramaId.value,
         // tooltip: `我是提示信息`,
         tooltip: {
           content: `我是提示信息`,
@@ -327,39 +294,6 @@ export default {
       });
     }
 
-    function localStorageGetMarker(panoramaId: string | number) {
-      let markerArr = JSON.parse(localStorage.getItem("markerArr") || "[]");
-
-      markers = markerArr.filter((marker: MarkerProps) => {
-        return marker.panoramaId == panoramaId;
-      });
-    }
-
-    function localStorageSetMarker(marker: MarkerProps) {
-      let markerAll: MarkerProps[] =
-        JSON.parse(localStorage.getItem("markerArr") || "[]") || [];
-      let index = markerAll.findIndex((item): boolean => {
-        return item.id == marker.id;
-      });
-
-      if (index != -1) {
-        // 存在就更新
-        markerAll.splice(index, 1, marker);
-      } else {
-        markerAll.push(marker);
-      }
-      localStorage.setItem("markerArr", JSON.stringify(markerAll));
-    }
-
-    function localStorageRemoveMarker(markerId: string | number) {
-      let markerAll = JSON.parse(
-        localStorage.getItem("markerArr") || "[]"
-      ).filter((marker: MarkerProps) => {
-        return marker.id != markerId;
-      });
-      localStorage.setItem("markerArr", JSON.stringify(markerAll));
-    }
-
     /**
      * 标签侧边栏确定的回调
      */
@@ -367,19 +301,17 @@ export default {
       if (type == "submit") {
         isShowSidebar.value = false;
         prevMarkerId = ""; // 保存就清除记录的点击marker的id
+        console.log(markerInfo.value, "输入的内容");
 
         console.log("确定的回调");
-        let option = {
+        markersPlugin.updateMarker({
           ...markerOption,
           markerInfo: {
             title: markerInfo.value.title,
             msg: markerInfo.value.msg,
             imgList: markerInfo.value.imgList || [],
           },
-        } as MarkerProps;
-
-        markersPlugin.updateMarker(option);
-        localStorageSetMarker(option);
+        } as MarkerProps);
       } else {
         isShowSidebar.value = false;
 
@@ -390,12 +322,11 @@ export default {
     }
 
     return {
-      currentPanoramaId,
-      panoramaList,
+      panoramaArr,
       sidebarMarkerInfoRef,
       isShowSidebar,
       markerInfo,
-      clickTogglePanorama,
+      setViewer,
       submitCallBack,
     };
   },
@@ -472,13 +403,8 @@ export default {
       height: 100%;
       margin-right: 10px;
       background-color: var(--el-color-primary);
-      cursor: pointer;
       &:last-child {
         margin-right: 0px;
-      }
-      &.active {
-        background-color: var(--el-color-warning);
-        color: white;
       }
       &:hover {
         background-color: var(--el-color-warning);

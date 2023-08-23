@@ -201,17 +201,6 @@
           "roles": ["ADMIN"],
           "isKeepAlive": true
         }
-      },
-      {
-        "path": "/func/panorama",
-        "name": "Panorama",
-        "component": "func/panorama/index",
-        "meta": {
-          "title": "全景图",
-          "icon": "menu-function-move",
-          "roles": ["ADMIN"],
-          "isKeepAlive": true
-        }
       }
     ]
   },

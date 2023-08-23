@@ -17,52 +17,54 @@
     </div>
 
     <button @click="clickCancelBtn" ref="myBtn">取消</button>
-    <button @click="clickConfigBtn" ref="myBtn">确定</button>
+    <button @click="clickConfirmBtn" ref="myBtn">确定</button>
   </div>
 </template>
 
-<script lang="ts">
-import { onMounted, onUpdated, ref, toRefs } from "vue";
+<script setup lang="ts" name="SidebarMarkerInfo">
+import { onMounted, toRefs } from "vue";
+export interface MarkerInfo {
+  title: string;
+  msg: string;
+  imgList: {
+    id: string | number;
+    url: string;
+  }[];
+}
 
-export default {
-  name: "SidebarMarkerInfo",
-  props: {
-    markerInfo: {
-      type: Object,
-      required: true,
-    },
-  },
-  emits: ["update:markerInfo", "submitCallBack"],
-  setup(props, context) {
-    let { markerInfo } = toRefs(props);
+const props = defineProps<{
+  markerInfo: MarkerInfo;
+}>();
 
-    onMounted(() => {
-      console.log("渲染内容");
-    });
-    // onUpdated(() => {
-    //   console.log("更新");
-    //   console.log(props, markerId);
-    // });
+const emits = defineEmits<{
+  (e: "update:markerInfo", markerInfo: MarkerInfo): void;
+  (e: "submitCallBack", type: "submit" | "cancel"): void;
+}>();
 
-    function clickConfigBtn() {
-      console.log(markerInfo);
+let { markerInfo } = toRefs(props);
 
-      context.emit("update:markerInfo", markerInfo.value);
-      setTimeout(() => {
-        console.log("侧边栏异步请求完成");
-        context.emit("submitCallBack", "submit");
-      }, 1500);
-    }
-    function clickCancelBtn() {
-      console.log(markerInfo);
-      context.emit("submitCallBack", "cancel");
-    }
-    return {
-      clickConfigBtn,
-      clickCancelBtn,
-    };
-  },
-};
+onMounted(() => {
+  console.log("渲染内容");
+});
+
+/**
+ * 点击确定
+ */
+function clickConfirmBtn() {
+  emits("update:markerInfo", markerInfo.value);
+  setTimeout(() => {
+    console.log("侧边栏异步请求完成");
+    emits("submitCallBack", "submit");
+  }, 1500);
+}
+
+/**
+ * 点击取消
+ */
+function clickCancelBtn() {
+  // console.log(markerInfo);
+  emits("submitCallBack", "cancel");
+}
 </script>
 
 <style lang="scss" scoped>

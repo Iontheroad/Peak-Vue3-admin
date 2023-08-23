@@ -1,11 +1,12 @@
 <template>
   <div class="panorama-box" style="color: red">
-    <div id="viewer" ref="viewer"></div>
+    <div id="viewer"></div>
     <ul class="nav">
       <li
-        v-for="(item, index) in panoramaArr"
+        v-for="(item, index) in panoramaList"
         :key="index"
-        @click="setViewer(item.img)"
+        :class="{ active: item.id == currentPanoramaId }"
+        @click="clickTogglePanorama(item)"
       >
         {{ `全景图${index + 1}` }}
       </li>
@@ -14,15 +15,15 @@
       v-if="isShowSidebar"
       ref="sidebarMarkerInfoRef"
       v-model:markerInfo="markerInfo"
-      @submitCallBack="submitCallBack"
+      @ConfirmCallback="ConfirmCallback"
     />
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts" name="Panorama">
 import { ClickData, Viewer } from "photo-sphere-viewer";
 import "photo-sphere-viewer/dist/photo-sphere-viewer.css";
-import { Ref, nextTick, onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 
 import {
   Marker,
@@ -31,306 +32,347 @@ import {
   SelectMarkerData,
 } from "photo-sphere-viewer/dist/plugins/markers";
 import "photo-sphere-viewer/dist/plugins/markers.css";
-import SidebarMarkerInfo from "./SidebarMarkerInfo.vue";
+import SidebarMarkerInfo, { type MarkerInfo } from "./SidebarMarkerInfo.vue";
+import { ElMessage } from "element-plus";
 
-// 自定义的marker携带的侧边框数据类型
-type MarkerInfo = {
-  id?: string;
-  title?: string;
-  msg?: string;
-  imgList?: {
-    id: number | string;
-    url: string;
-  }[];
+type MyMarkerProps = {
+  panoramaId: string | number;
+  markerInfo?: MarkerInfo;
 };
 // marker完成的参数
-type MarkerProps = MarkerProperties & { markerInfo?: MarkerInfo };
+type MarkerProps = MarkerProperties & MyMarkerProps;
 
-export default {
-  name: "Panorama",
-  components: {
-    SidebarMarkerInfo,
+let viewer: Viewer;
+let markersPlugin: MarkersPlugin;
+// let sidebarMarkerInfoRef = ref();
+let isShowSidebar = ref(false); // 控制侧边框显示隐藏
+let panoramaList = [
+  {
+    id: 1,
+    img: "https://img2.baidu.com/it/u=332489680,4189766700&fm=253&fmt=auto&app=138&f=JPEG?w=863&h=315",
   },
-  setup(_props) {
-    let viewer: Viewer;
-    let markersPlugin: MarkersPlugin;
-    let sidebarMarkerInfoRef = ref();
-    let isShowSidebar = ref(false); // 控制侧边框显示隐藏
-    let panoramaArr = [
-      {
-        img: "https://img2.baidu.com/it/u=332489680,4189766700&fm=253&fmt=auto&app=138&f=JPEG?w=863&h=315",
-      },
-      {
-        img: "https://img0.baidu.com/it/u=3847874910,4155731130&fm=253&fmt=auto&app=138&f=JPEG?w=1378&h=500",
-      },
-      {
-        img: "https://i1.3conline.com/images/piclib/201202/20/batch/1/126860/1329670312631ifi0c11utn.jpg",
-      },
-    ]; // 全景图
+  {
+    id: 2,
+    img: "https://img0.baidu.com/it/u=3847874910,4155731130&fm=253&fmt=auto&app=138&f=JPEG?w=1378&h=500",
+  },
+  {
+    id: 3,
+    img: "https://i1.3conline.com/images/piclib/201202/20/batch/1/126860/1329670312631ifi0c11utn.jpg",
+  },
+]; // 全景图
+let currentPanoramaId = ref<string | number>(1); // 当前全景图的id
 
-    const markers: MarkerProps[] = reactive([
-      {
-        id: `mark:123456`,
+let markers: MarkerProps[] = [
+  // {
+  //   id: `mark:123456`, // 标记id
+  //   anchor: "center center", // 标记相对点击位置
+  //   html: `<img src="http://119.91.22.164:8085/images/11411538250643115avatar.jpg" />`, // 标记的内容
+  //   longitude: 0.27335309121043694, // 经度
+  //   latitude: 0.03017908389074716, // 纬度
+  //   // tooltip: `我是提示信息`,
+  //   tooltip: {
+  //     content: `我是默认的标记`,
+  //     position: "center top",
+  //   },
+  //   visible: true, // 标注初始显示与否
+  //   panoramaId: 1, // 对应的全景图id
+  //   markerInfo: {
+  //     id: "mark:123456",
+  //     title: "我是默认marker的标题",
+  //     msg: "我是默认marker的信息",
+  //     imgList: [
+  //       {
+  //         id: 1,
+  //         url: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg",
+  //       },
+  //     ],
+  //   },
+  //   // position: { textureX: 945, textureY: 445 },
+  //   // size: { width: 32, height: 32 },
+  //   // zoomLvl: 100,
+  //   // content: document.getElementById("lorem-content").innerHTML,
+  //   // content: `${sidebarMarkerInfoRef.value?.$el.outerHTML}`,
+  // },
+];
 
-        position: { textureX: 945, textureY: 445 },
-        size: { width: 32, height: 32 },
-        zoomLvl: 100,
-        // content: document.getElementById("lorem-content").innerHTML,
-        // content: `${sidebarMarkerInfoRef.value?.$el.outerHTML}`,
-        // tooltip: `我是提示信息`,
-        tooltip: {
-          content: `我是默认的标记`,
-          position: "center top",
+onMounted(() => {
+  // 先获取本地存储的marker信息
+  localStorageGetMarker(currentPanoramaId.value);
+
+  // 初始化第一张全景图
+  setViewer(panoramaList[0]);
+
+  // viewer.once("ready", () => {
+  //   markerArr.forEach((item: MarkerProperties) => {
+  //     markersPlugin.addMarker(item);
+  //   });
+  // });
+});
+
+/**
+ * 点击切换全景图
+ * @param panorama  全景图信息
+ */
+function clickTogglePanorama(panorama: { id: string | number; img: string }) {
+  currentPanoramaId.value = panorama.id; // 记录当前的全景图id
+  localStorageGetMarker(currentPanoramaId.value);
+
+  setViewer(panorama);
+}
+
+/**
+ * 初始化
+ * @param panoramaId 全景图的id
+ */
+function setViewer(panorama: { id: string | number; img: string }) {
+  if (viewer) {
+    try {
+      viewer.destroy();
+    } catch (e) {
+      console.log(e);
+      const viewer = document.querySelector("#viewer");
+      viewer!.removeChild(viewer!.childNodes[0]);
+    }
+  }
+
+  // 初始化
+  viewer = new Viewer({
+    container: document.querySelector("#viewer") as HTMLElement,
+    panorama: panorama?.img, // 全景图地址
+    // size: {
+    //   width: 886,
+    //   height: 554,
+    // }, // 大小
+    plugins: [
+      [
+        MarkersPlugin,
+        {
+          markers: markers,
         },
-        visible: true, // 标注初始显示与否
-        html: `<img src="http://119.91.22.164:8085/images/11411538250643115avatar.jpg" />
-            `,
-        longitude: 0.27335309121043694, // 经度
-        latitude: 0.03017908389074716, // 纬度
-        anchor: "center center", // 标记相对点击位置
-        markerInfo: {
-          id: "mark:123456",
-          title: "我是默认marker的标题",
-          msg: "我是默认marker的信息",
-          imgList: [
-            {
-              id: 1,
-              url: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg",
-            },
-          ],
-        },
-      },
-    ]);
+      ],
+    ],
+  });
 
-    onMounted(() => {
-      setViewer(panoramaArr[0].img);
-      // const markerArr = JSON.parse(localStorage.getItem("markerArr") || "[]");
-      // viewer.once("ready", () => {
-      //   markerArr.forEach((item: MarkerProperties) => {
-      //     markersPlugin.addMarker(item);
-      //   });
-      // });
-    });
+  // 监听全景图加载完成
+  viewer.once("ready", () => {
+    console.log("全景图加载完成");
+  });
 
-    /**
-     * 初始化
-     * @param panorama 全景图地址
-     */
-    function setViewer(panorama: string) {
-      if (viewer) {
-        try {
-          viewer.destroy();
-        } catch (e) {
-          console.log(e);
-          const viewer = document.querySelector("#viewer");
-          viewer!.removeChild(viewer!.childNodes[0]);
-        }
-      }
+  viewer.on("position-updated", () => {
+    console.log(`滑动`);
+    isShowSidebar.value = false;
+    prevMarkerId && markersPlugin.removeMarker(prevMarkerId);
+    prevMarkerId = "";
+  });
 
-      // 初始化
-      viewer = new Viewer({
-        container: document.querySelector("#viewer") as HTMLElement,
-        panorama, // 全景图地址
-        // size: {
-        //   width: 886,
-        //   height: 554,
-        // }, // 大小
-        plugins: [
-          [
-            MarkersPlugin,
-            {
-              markers: markers,
-            },
-          ],
-        ],
-      });
+  // 获取标记实例
+  markersPlugin = viewer.getPlugin(MarkersPlugin)!;
 
-      // 监听全景图加载完成
-      viewer.once("ready", () => {
-        console.log("全景图加载完成");
-      });
-
-      viewer.on("position-updated", () => {
-        console.log(`滑动`);
-        isShowSidebar.value = false;
-        prevMarkerId && markersPlugin.removeMarker(prevMarkerId);
-        prevMarkerId = "";
-      });
-
-      // 获取标记实例
-      markersPlugin = viewer.getPlugin(MarkersPlugin)!;
-
-      /*  点击标注
+  /*  点击标注
       为选中标注事件绑定了一个回调函数。当用户点击选中一个标注时，该回调函数会被触发。
       */
-      markersPlugin.on("select-marker", selectMarker);
+  markersPlugin.on("select-marker", selectMarker);
 
-      // 点击添加标注
-      viewer.on("click", addMarker);
-    }
+  // 点击添加标注
+  viewer.on("click", addMarker);
+}
 
-    /**
-     * 点击marker的事件
-     * @param event
-     * @param marker 点击的marker的信息
-     * @param selectMarkerEvent 选择标记事件的数据
-     */
-    async function selectMarker(
-      event: uevent.Event,
-      marker: Marker,
-      selectMarkerEvent: SelectMarkerData
-    ) {
-      // console.log("select-marker e:", event);
-      console.log("marker:", marker);
-      // console.log("selectMarkerEvent:", selectMarkerEvent);
-      let { dblclick, rightclick } = selectMarkerEvent;
-      if (dblclick) {
-        console.log("双击删除");
-        markersPlugin.removeMarker(marker.id);
-        prevMarkerId = ""; // 删除记录的marker的id(防止下次添加时，该marker已经删除，避免不存在出异常)
-        isShowSidebar.value = false; // 关闭侧边信息栏
-      } else if (rightclick) {
-        console.log("右击");
+/**
+ * 点击marker的事件
+ * @param event
+ * @param marker 点击的marker的信息
+ * @param selectMarkerEvent 选择标记事件的数据
+ */
+async function selectMarker(
+  _event: uevent.Event,
+  marker: Marker,
+  selectMarkerEvent: SelectMarkerData
+) {
+  // console.log("select-marker e:", _event);
+  // console.log("marker:", marker);
+  // console.log("selectMarkerEvent:", selectMarkerEvent);
+  let { dblclick, rightclick } = selectMarkerEvent;
+  if (dblclick) {
+    console.log("双击删除");
+    removeMarker(marker.id);
+  } else if (rightclick) {
+    console.log("右击");
+  } else {
+    console.log("单击");
+
+    /* 这里的判断可根据业务场景自定义拦截 */
+    // 每次单击marker时，上次添加marker未保存 且 点击的是其他marker
+    if (prevMarkerId && prevMarkerId != marker.id) {
+      // 在此处可以判断一下未保存的marker是否输入了内容，如果填写了内容就拦截不清除
+      if (markerInfo.value.title !== "") {
+        ElMessage.warning({
+          message: "侧边栏填写的内容,还未点击保存",
+        });
+
+        return true;
       } else {
-        console.log("单击");
-        /* // 每次单击marker时，判断上次添加marker是否保存,如果没有保存则拦截
-        // if (prevMarkerId) {
-        //   // markersPlugin.removeMarker(prevMarkerId);
-        //   // prevMarkerId = "";
-        //   return;
-        // } */
-
-        let config = marker.config as MarkerProps;
-        console.log(config.markerInfo!);
-
-        markerInfo.value = (config.markerInfo as MarkerInfo) || {};
-        // 打开侧边框
-        isShowSidebar.value = true;
+        // 侧边栏没有输入内容，就删除这个没有保存的marker
+        markersPlugin.removeMarker(prevMarkerId);
+        prevMarkerId = "";
       }
-
-      // 更新标记
+    } else if (prevMarkerId && prevMarkerId == marker.id) {
+      // 该marker未保存且填写了内容就拦截
+      if (markerInfo.value.title !== "") {
+        return true;
+      }
     }
 
-    let prevMarkerId: string; // 记录上一个点击添加marker的id，用于判断是否保存（存在未保存，不存在保存）
-    let markerOption = {};
-    /**
-     * 添加标记
-     * @param _event
-     * @param data 点击的信息
-     */
-    function addMarker(_event: uevent.Event, data: ClickData) {
-      console.log("添加标注", event, data);
-      let { rightclick } = data;
-      if (rightclick) return; // 是否是右键触发
+    let config = marker.config as MarkerProps;
+    // console.log(config.markerInfo!);
 
-      // 先判断上一个点击的marker的id是否存在，存在就删除
-      if (prevMarkerId) {
-        markersPlugin.removeMarker(prevMarkerId);
-      }
+    recordMarker = { ...config }; // 记录点击的marker信息
+    markerInfo.value = (config.markerInfo as MarkerInfo) || {}; // 填充侧边栏数据
+    isShowSidebar.value = true; // 打开侧边框
+  }
 
-      isShowSidebar.value = true; // 显示侧边信息栏
+  // 更新标记
+}
 
-      let id = `${+new Date()}-${Math.random() * 10}`;
-      prevMarkerId = id; // 记录每次点击添加marker的id,
-      markerInfo.value = {
-        title: "",
-        msg: "",
-        imgList: [],
-      };
+let prevMarkerId: string; // 记录上一个点击添加marker的id，用于判断是否保存（存在未保存，不存在保存）
+let recordMarker = {}; // 记录添加和点击的marker信息(用于更新)
+/**
+ * 添加标记
+ * @param _event
+ * @param data 点击的信息
+ */
+function addMarker(_event: uevent.Event, data: ClickData) {
+  // console.log("添加标注", _event, data);
+  let { rightclick } = data;
+  if (rightclick) return; // 是否是右键触发
 
-      let option: MarkerProps = {
-        id,
-        // tooltip: `我是提示信息`,
-        tooltip: {
-          content: `我是提示信息`,
-          position: "center top",
-          // trigger: "click",
-          // className: "custom-tooltip",
-        },
-        visible: true, // 标注初始显示与否
-        html: `
+  // 先判断上一个点击的marker的id是否存在，存在就删除
+  if (prevMarkerId) {
+    markersPlugin.removeMarker(prevMarkerId);
+  }
+
+  isShowSidebar.value = true; // 显示侧边信息栏
+
+  let id = `${+new Date()}-${Math.random() * 10}`;
+  prevMarkerId = id; // 记录每次点击添加marker的id,
+  markerInfo.value = {
+    title: "",
+    msg: "",
+    imgList: [],
+  };
+
+  let option: MarkerProps = {
+    id,
+    panoramaId: currentPanoramaId.value,
+    // tooltip: `我是提示信息`,
+    tooltip: {
+      content: `我是提示信息`,
+      position: "center top",
+      // trigger: "click",
+      // className: "custom-tooltip",
+    },
+    visible: true, // 标注初始显示与否
+    html: `
               <img src="http://119.91.22.164:8085/images/11411538250643115avatar.jpg" />
               `,
-        longitude: data.longitude, // 经度
-        latitude: data.latitude, // 纬度
-        anchor: "center center", // 标记相对点击位置
-      };
-      markerOption = option;
-      markersPlugin.addMarker(option);
+    longitude: data.longitude, // 经度
+    latitude: data.latitude, // 纬度
+    anchor: "center center", // 标记相对点击位置
+  };
+  recordMarker = option;
+  markersPlugin.addMarker(option);
+}
+
+/**
+ * 删除marker
+ * @param markerId
+ */
+function removeMarker(markerId: string | number) {
+  // 先判断上一个点击的marker的id是否存在，存在就删除
+  prevMarkerId && markersPlugin.removeMarker(prevMarkerId);
+  prevMarkerId = ""; // 删除记录的marker的id(防止下次添加时，该marker已经删除，避免不存在出异常)
+  isShowSidebar.value = false; // 隐藏侧边信息栏
+  localStorageRemoveMarker(markerId);
+}
+
+/**
+ * 获取本地markers信息
+ * @param panoramaId
+ */
+function localStorageGetMarker(panoramaId: string | number) {
+  let markerArr = JSON.parse(localStorage.getItem("markerArr") || "[]");
+
+  markers = markerArr.filter((marker: MarkerProps) => {
+    return marker.panoramaId == panoramaId;
+  });
+}
+
+/**
+ * 添加或修改本地marker信息
+ * @param marker
+ */
+function localStorageSetMarker(marker: MarkerProps) {
+  let markerAll: MarkerProps[] =
+    JSON.parse(localStorage.getItem("markerArr") || "[]") || [];
+  let index = markerAll.findIndex((item): boolean => {
+    return item.id == marker.id;
+  });
+
+  if (index != -1) {
+    // 存在就更新
+    markerAll.splice(index, 1, marker);
+  } else {
+    markerAll.push(marker);
+  }
+  localStorage.setItem("markerArr", JSON.stringify(markerAll));
+}
+
+/**
+ * 删除本地marker信息
+ * @param markerId
+ */
+function localStorageRemoveMarker(markerId: string | number) {
+  let markerAll = JSON.parse(localStorage.getItem("markerArr") || "[]").filter(
+    (marker: MarkerProps) => {
+      return marker.id != markerId;
     }
+  );
+  localStorage.setItem("markerArr", JSON.stringify(markerAll));
+}
 
-    function removeMarker() {
-      // 先判断上一个点击的marker的id是否存在，存在就删除
-      if (prevMarkerId) {
-        markersPlugin.removeMarker(prevMarkerId);
-      }
+// 传入表单的数据
+let markerInfo = ref<MarkerInfo>({
+  title: "",
+  msg: "",
+  imgList: [],
+});
+/**
+ * 标签侧边栏确定的回调
+ */
+function ConfirmCallback(type: "submit" | "cancel") {
+  if (type == "submit") {
+    isShowSidebar.value = false;
+    prevMarkerId = ""; // 保存就清除记录的点击marker的id
 
-      isShowSidebar.value = true; // 显示侧边信息栏
-    }
+    console.log("确定的回调");
+    let option = {
+      ...recordMarker,
+      markerInfo: {
+        title: markerInfo.value.title,
+        msg: markerInfo.value.msg,
+        imgList: markerInfo.value.imgList || [],
+      },
+    } as MarkerProps;
 
-    // 传入表单的数据
-    let markerInfo = ref<MarkerInfo>({
-      title: "",
-      msg: "",
-      imgList: [],
-    });
-    /**
-     * 模拟接口
-     */
-    function reqGetDate() {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          resolve({
-            title: "我是标记的标题",
-            msg: "这是我的标记信息",
-            imgList: [
-              {
-                id: 1,
-                url: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg",
-              },
-            ],
-          });
-        }, 1000);
-      });
-    }
+    markersPlugin.updateMarker(option);
+    localStorageSetMarker(option);
+  } else {
+    isShowSidebar.value = false;
 
-    /**
-     * 标签侧边栏确定的回调
-     */
-    function submitCallBack(type: "submit" | "cancel") {
-      if (type == "submit") {
-        isShowSidebar.value = false;
-        prevMarkerId = ""; // 保存就清除记录的点击marker的id
-        console.log(markerInfo.value, "输入的内容");
-
-        console.log("确定的回调");
-        markersPlugin.updateMarker({
-          ...markerOption,
-          markerInfo: {
-            title: markerInfo.value.title,
-            msg: markerInfo.value.msg,
-            imgList: markerInfo.value.imgList || [],
-          },
-        } as MarkerProps);
-      } else {
-        isShowSidebar.value = false;
-
-        // 取消添加就清除这个marker
-        prevMarkerId && markersPlugin.removeMarker(prevMarkerId);
-        prevMarkerId = ""; // 保存就清除记录的点击marker的id
-      }
-    }
-
-    return {
-      panoramaArr,
-      sidebarMarkerInfoRef,
-      isShowSidebar,
-      markerInfo,
-      setViewer,
-      submitCallBack,
-    };
-  },
-};
+    // 取消添加就清除这个marker
+    prevMarkerId && markersPlugin.removeMarker(prevMarkerId);
+    prevMarkerId = ""; // 保存就清除记录的点击marker的id
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -403,8 +445,13 @@ export default {
       height: 100%;
       margin-right: 10px;
       background-color: var(--el-color-primary);
+      cursor: pointer;
       &:last-child {
         margin-right: 0px;
+      }
+      &.active {
+        background-color: var(--el-color-warning);
+        color: white;
       }
       &:hover {
         background-color: var(--el-color-warning);
