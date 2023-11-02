@@ -62,11 +62,6 @@ export default {
       type: Number,
       default: () => 2,
     },
-    isMultiple: {
-      // 是否支持多选
-      type: Boolean,
-      default: () => true,
-    },
     format: {
       //默认上传格式
       type: String,

@@ -58,6 +58,7 @@ const data = reactive({
 
 let { todoList } = toRefs(data);
 </script>
+
 <style lang="scss">
 .drag-task-container {
   flex: 1;
@@ -75,18 +76,19 @@ let { todoList } = toRefs(data);
       padding: 10px 10px 100px;
       margin: 10px;
 
-    overflow-y: auto;
-    background: #f0f0f0;
-    border-radius: 3px;
-  }
-  .todo-1 {
-    background: linear-gradient(135deg, #fce38a, #f38181);
-  }
-  .todo-2 {
-    background: linear-gradient(135deg, #17ead9, #6078ea);
-  }
-  .todo-3 {
-    background: linear-gradient(135deg, #42e695, #3bb2b8);
+      overflow-y: auto;
+      background: #f0f0f0;
+      border-radius: 3px;
+    }
+    .todo-1 {
+      background: linear-gradient(135deg, #fce38a, #f38181);
+    }
+    .todo-2 {
+      background: linear-gradient(135deg, #17ead9, #6078ea);
+    }
+    .todo-3 {
+      background: linear-gradient(135deg, #42e695, #3bb2b8);
+    }
   }
 }
 </style>

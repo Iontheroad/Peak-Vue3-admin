@@ -19,7 +19,8 @@
       // 指定一组将导入重新映射到其他查找位置的条目。
       "@/*": ["src/*"]
     },
-    "allowSyntheticDefaultImports": true // 允许从没有设置默认导出的模块中默认导入
+    "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入
+    "allowJs": true // 允许JavaScript文件成为程序的一部分。使用checkJS选项从这些文件中获取错误。
   },
   // 被编译的文件的所在目录(表示src下的.ts\.d.ts\.tsx,.vue都会被编译)
   "include": [

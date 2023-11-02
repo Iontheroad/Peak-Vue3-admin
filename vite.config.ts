@@ -20,6 +20,7 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
    * }
    */
   const env = loadEnv(mode, process.cwd());
+  console.log(command, mode);
 
   return {
     // base: "./",
@@ -73,8 +74,13 @@ export default defineConfig(({ command, mode }: ConfigEnv): UserConfig => {
       }),
       viteMockServe({
         mockPath: "./src/mocks",
+        // 设置是否启用本地开发环境的mock服务 如果是，则启用本地mock服务。
         localEnabled: command == "serve", // 设置是否启用本地模拟.ts文件，不要在生产环境中打开
+
+        // 设置是否启用生产环境的mock服务 如果不是"serve"，则启用生产环境mock服务。
         prodEnabled: command !== "serve", // 控制mock打包到最终代码内
+
+        // 在生成的代码中插入的代码片段。导入了一个名为setupProdMockServer的函数，并调用它来设置生产环境的mock服务。这样，在生产环境中也可以使用mock数据来模拟接口请求。
         injectCode: `
         import { setupProdMockServer } from './mocks/index';
         setupProdMockServer();
