@@ -1,12 +1,15 @@
 /**
+ * 数据仓库
+ */
+
+/**
  * 状态仓库
  */
 
 import { createPinia, defineStore } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import type { PersistedStateOptions } from "pinia-plugin-persistedstate";
-import useUserStore from "./modules/user";
-import { getLanguage } from "@/lang/index";
+import { useUserStore } from "./modules/user";
 import { DEFAULT_PRIMARY } from "@/config/config";
 
 interface GlobalType {
@@ -18,20 +21,20 @@ interface ThemeConfigProps {
   layout: "vertical" | "classic" | "transverse" | "columns";
   isShowLogo: boolean;
   isFixedHeader: boolean;
-  isShowBreadcrumb: Boolean;
-  isShowBreadcrumbIcon: Boolean;
+  isShowBreadcrumb: boolean;
+  isShowBreadcrumbIcon: boolean;
   isShowTabsView: boolean;
   isShowTabsIcon: boolean;
   isShowFooter: boolean;
   primary: string;
-  isDark: Boolean;
+  isDark: boolean;
 }
 
 // 全局状态
 const useGlobalStore = defineStore("globalStore", {
   state: (): GlobalType => ({
     elementSize: "default",
-    language: getLanguage(), // 获取语言
+    language: "en", // 获取语言
     /* 主体配置 */
     themeConfig: {
       // 布局切换 ==>  纵向：vertical | 经典：classic | 横向：transverse | 分栏：columns
@@ -44,8 +47,8 @@ const useGlobalStore = defineStore("globalStore", {
       isShowTabsIcon: true, // 是否显示标签icon
       isShowFooter: true, // 是否显示页脚
       primary: DEFAULT_PRIMARY, // 默认 primary 主题颜色
-      isDark: false,
-    },
+      isDark: false // 暗黑模式
+    }
   }),
 
   actions: {
@@ -63,7 +66,7 @@ const useGlobalStore = defineStore("globalStore", {
      */
     setThemeConfig(themeConfig: ThemeConfigProps) {
       this.themeConfig = themeConfig;
-    },
+    }
   },
 
   persist: {
@@ -72,10 +75,10 @@ const useGlobalStore = defineStore("globalStore", {
       {
         key: "globalStore",
         storage: localStorage,
-        paths: [],
-      },
-    ],
-  } as PersistedStateOptions,
+        paths: []
+      }
+    ]
+  } as PersistedStateOptions
 });
 
 const pinia = createPinia();

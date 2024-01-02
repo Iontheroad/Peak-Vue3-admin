@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "composite": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
+    "composite": true, // 启用允许TypeScript项目与项目引用一起使用的约束。
+    "skipLibCheck": true, // 跳过对声明文件（.d.ts）的检查，提高编译速度
+    "module": "ESNext", // 模块
+    "moduleResolution": "bundler", // 模块解析策略
+    "allowSyntheticDefaultImports": true // 允许从没有设置默认导出的模块中默认导入
   },
   "include": ["vite.config.ts"]
 }

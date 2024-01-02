@@ -1,10 +1,7 @@
 <template>
   <el-dropdown class="user-container" trigger="click">
     <div class="user-info">
-      <img
-        :src="userInfo.avatar + '?imageView2/1/w/80/h/80'"
-        class="user-avatar"
-      />
+      <img :src="userInfo?.avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
       <span class="user-name">Peak<CaretBottom class="icon" /></span>
     </div>
     <template #dropdown>
@@ -48,28 +45,28 @@ function click_logout() {
   ElMessageBox.confirm("确定注销并退出系统吗？", "温馨提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
-    type: "warning",
+    type: "warning"
   })
     .then(async () => {
       try {
         await userStore.logout_actions();
         ElMessage.success({
           showClose: true,
-          message: "退出成功",
+          message: "退出成功"
         });
         router.replace("/login");
       } catch (error) {
         ElMessage({
           showClose: true,
           message: "退出失败",
-          type: "error",
+          type: "error"
         });
       }
     })
     .catch(() => {
       ElMessage.info({
         showClose: true,
-        message: "取消退出",
+        message: "取消退出"
       });
     });
 }
@@ -78,6 +75,7 @@ function click_logout() {
 <style scoped lang="scss">
 .user-container {
   padding: 0 8px;
+
   // 头像
   .user-info {
     //  用户头像
@@ -90,9 +88,11 @@ function click_logout() {
       height: 40px;
       border-radius: 50%;
     }
+
     // 用户名
     .user-name {
       display: inline-block;
+
       // width: fit-content;
       margin-left: 5px;
       font-size: 14px;

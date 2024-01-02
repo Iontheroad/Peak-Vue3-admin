@@ -23,7 +23,7 @@ declare namespace Menu {
     path: string;
     name: string;
     redirect?: string;
-    component?: (() => Promise<typeof import("*.vue")>) | string;
+    component?: string | (() => Promise<unknown>);
     children?: MenuOptions[];
     meta: MenuMeta;
   }

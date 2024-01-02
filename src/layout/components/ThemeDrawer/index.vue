@@ -1,5 +1,5 @@
 <template>
-  <el-drawer v-model="drawerVisible" title="布局设置" size="300px">
+  <el-drawer v-model="drawerVisible" append-to-body title="布局设置" size="300px">
     <!-- 全局主题 -->
     <el-divider class="divider" content-position="center">
       <el-icon><ColdDrink /></el-icon>
@@ -12,6 +12,10 @@
         :predefine="colorList"
         @change="changePrimary"
       />
+    </div>
+    <div class="theme-item">
+      <span>暗黑模式</span>
+      <SwitchDark />
     </div>
     <br />
 
@@ -30,11 +34,7 @@
     </div>
     <div class="theme-item">
       <span>
-        <el-tooltip
-          effect="dark"
-          content="移动端下不显示面包屑"
-          placement="right"
-        >
+        <el-tooltip effect="dark" content="移动端下不显示面包屑" placement="right">
           面包屑
         </el-tooltip>
       </span>
@@ -61,14 +61,15 @@
 
 <script setup lang="ts">
 import { ColdDrink, Setting } from "@element-plus/icons-vue";
-import { ref, computed, watch } from "vue";
+import { ref, computed } from "vue";
 import { useTheme } from "@/hooks/useTheme";
 import { useGlobalStore } from "@/store/index";
 import { DEFAULT_PRIMARY } from "@/config/config";
-// import SwitchDark from "@/components/SwitchDark/index.vue";
+import SwitchDark from "@/components/SwitchDark/index.vue";
 import mittBus from "@/utils/mittBus";
 
-const { changePrimary } = useTheme();
+const { initTheme, changePrimary } = useTheme();
+initTheme(); // 初始化默认主题色主题
 
 // 预定义主题颜色
 const colorList = [
@@ -81,7 +82,7 @@ const colorList = [
   "#ff5c93",
   "#e74c3c",
   "#fd726d",
-  "#9b59b6",
+  "#9b59b6"
 ];
 
 const globalStore = useGlobalStore();
@@ -89,6 +90,7 @@ const themeConfig = computed(() => globalStore.themeConfig);
 
 // 打开主题设置
 const drawerVisible = ref(false);
+
 // 监听订阅点击 顶部栏主题设置
 mittBus.on("openThemeDrawer", () => (drawerVisible.value = true));
 </script>

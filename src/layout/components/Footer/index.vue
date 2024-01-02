@@ -1,18 +1,23 @@
 <template>
-  <div class="footer">
+  <el-footer class="footer">
     <a href="https://github.com/Iontheroad" target="_blank">
       2023 © Peak Vue3 Admin Author: zhang Peak.
     </a>
-  </div>
+  </el-footer>
 </template>
-
+<script lang="ts" setup>
+defineOptions({
+  name: "LayoutFooter"
+});
+</script>
 <style scoped lang="scss">
 .footer {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 30px;
-  background: #ffffff;
+
+  // background: #ffffff;
   border-top: 1px solid #e4e7ed;
   a {
     font-size: 14px;

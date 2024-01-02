@@ -1,80 +1,32 @@
 /**
- * peak
- * 用户状态模块
+ * 用户
  */
 import { defineStore } from "pinia";
-import { reqLoginApi, reqLogoutApi, reqGetUserInfoApi } from "@/api/user";
-import type { LoginData } from "@/api/user/type";
-import { getToken, removeToken, setToken } from "@/utils/cookie_token";
+import type { PersistedStateOptions } from "pinia-plugin-persistedstate";
 
-/**
- * 用户信息类型
- */
-interface UserInfo {
-  avatar: string;
-  nickname: string;
-  perms: string[];
-  roles: Array<string>;
-  userId: number | string;
+interface UserProps {
+  access_token: string;
+  refresh_token: string;
+  userInfo?: object;
 }
 
-export const useUserStore = defineStore("userStore", {
-  // id: "userStore",
-  state: () => ({
-    token: getToken(), // token
-    // 用户信息
+export const useUserStore = defineStore({
+  id: "peak-blog-user",
+  state: (): UserProps => ({
+    access_token: "", // 访问令牌
+    refresh_token: "", // 刷新令牌
     userInfo: {
-      avatar: "", // 头像
-      nickname: "", // 身份
-      perms: [], //按钮权限字段
-      roles: [], // 角色
-      userId: "", // 用户id
-    } as UserInfo,
+      avatar: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg", // 头像
+      nickname: "Peak", // 昵称
+      perms: ["sys:user:edit", "sys:user:delete", "sys:user:add"], //权限字段
+      roles: ["admin"], // 角色
+      userId: "1" // 用户id
+    }
   }),
   actions: {
-    /**
-     * 点击登录
-     * @param data
-     * @returns
-     */
-    async login_actions(data: LoginData) {
-      try {
-        let result = await reqLoginApi(data);
-        this.token = result.data.accessToken; // 保存Token
-        setToken(result.data.accessToken);
-        return Promise.resolve(result);
-      } catch (error) {
-        return Promise.reject(error);
-      }
-    },
-
-    /**
-     * 获取用户信息
-     * @returns
-     */
-    async getUserInfo_actions() {
-      try {
-        let result = await reqGetUserInfoApi(this.token as string);
-        this.userInfo = result.data;
-        return Promise.resolve(result);
-      } catch (error) {
-        return Promise.reject(error);
-      }
-    },
-
-    /**
-     * 退出登录
-     * @returns
-     */
-    async logout_actions() {
-      try {
-        const result = await reqLogoutApi();
-        return Promise.resolve(result);
-      } catch (error) {
-        return Promise.reject(error);
-      } finally {
-        this.resetUser();
-      }
+    setToken({ access_token, refresh_token }: UserProps) {
+      this.access_token = access_token;
+      this.refresh_token = refresh_token;
     },
 
     /**
@@ -82,17 +34,25 @@ export const useUserStore = defineStore("userStore", {
      */
     resetUser() {
       // 重置数据
-      removeToken();
-      this.token = ""; // 仓库的token也要清除
+      this.access_token = "";
+      this.refresh_token = "";
       this.userInfo = {
         avatar: "", // 头像
-        nickname: "", // 身份
+        nickname: "", // 昵称
         perms: [], //权限字段
         roles: [], // 角色
-        userId: "", // 用户id
+        userId: "" // 用户id
       };
-    },
+    }
   },
+  getters: {},
+  persist: {
+    enabled: true, // 开启数据存储
+    strategies: [
+      {
+        key: "peak-user",
+        storage: localStorage
+      }
+    ]
+  } as PersistedStateOptions
 });
-
-export default useUserStore;

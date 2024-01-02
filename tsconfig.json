@@ -1,34 +1,48 @@
 {
   "compilerOptions": {
-    "target": "ESNext", // ts代码编译的js版本
-    "useDefineForClassFields": true,
-    "module": "ESNext", // 编译后代码的模块化方式
-    "moduleResolution": "Node", // 选择模块解析策略
-    "types": ["vite-plugin-svg-icons/client", "node"], // 指定要包含的类型包名，而不需要在源文件中引用。
-    "strict": true, // 开启所有严格检查
+    "target": "ESNext",
+    "useDefineForClassFields": true, // 允许在类字段中使用 `defineProperties`
+    "module": "ESNext",
+    "types": ["vite/client", "element-plus/global"], //  // 指定要包含的类型包名
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true, // 跳过对声明文件（.d.ts）的检查,提高编译速度
+
+    /* Bundler mode */
+    "moduleResolution": "bundler", // 模块解析策略
+    "allowImportingTsExtensions": true, // 允许导入 .ts 后缀的文件
+    "resolveJsonModule": true, // 允许导入 .json 文件
+    "isolatedModules": true, // 使用独立的模块作用域
+    "noEmit": true, // 不生成声明文件
     "jsx": "preserve",
-    "resolveJsonModule": true, // 启用导入.json文件
-    "isolatedModules": true, // 确保每个文件都可以安全地转译，而不依赖于其他导入。
-    "esModuleInterop": true, // 生成额外的JavaScript以简化对导入CommonJS模块的支持。这使得 allowsyntheticdefaulultimports 具有类型兼容性。
-    "lib": ["ESNext", "DOM"], // 指定代码运行时所包含的库（宿主环境）
-    // "skipLibCheck": true, // 跳过所有.d的类型检查。ts文件。
-    // "noEmit": true, // 从编译中禁用发射文件。
-    "baseUrl": "./", // 解析非相对模块的基地址，默认是当前目录
+
+    /* 严格类型检查选项 */
+    "strict": true, // 启用所有严格类型检查选项。
+    // "noUnusedLocals": true, // 检查未使用的局部变量
+    // "noUnusedParameters": true, // 检查未使用的参数
+    // "noFallthroughCasesInSwitch": true // 检查 switch 语句中的 fallthrough
+    // "noImplicitAny": true, // 对带有隐含'any'类型的表达式和声明引发错误。
+    // "strictNullChecks": true, // 启用严格的空检查。
+    // "strictFunctionTypes": true,// 启用对函数类型的严格检查。
+    // "strictBindCallApply": true, // 在函数上启用严格的'bind'、'call'和'apply'方法。
+    // "strictPropertyInitialization": true,  // 对类中的属性初始化进行严格检查。
+    // "noImplicitThis": true, // 对带有隐含'any'类型的'this'表达式引发错误。
+    // "alwaysStrict": true, // 以严格模式解析并对每个源文件发出"use strict"。
+
+    "baseUrl": "./",
     "paths": {
-      //路径映射，相对于baseUrl
-      // 指定一组将导入重新映射到其他查找位置的条目。
+      "@": ["src"],
       "@/*": ["src/*"]
-    },
-    "allowSyntheticDefaultImports": true, // 允许从没有设置默认导出的模块中默认导入
-    "allowJs": true // 允许JavaScript文件成为程序的一部分。使用checkJS选项从这些文件中获取错误。
+    }
   },
-  // 被编译的文件的所在目录(表示src下的.ts\.d.ts\.tsx,.vue都会被编译)
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/mocks/json/sideber.json"
+    "build/**/*.ts",
+    "build/**/*.d.ts",
+    "vite.config.ts"
   ],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "exclude": ["node_modules", "dist", "**/*.js"]
+  // "references": [{ "path": "./tsconfig.node.json" }]
 }

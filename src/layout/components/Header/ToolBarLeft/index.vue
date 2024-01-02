@@ -1,30 +1,30 @@
 <template>
-  <div class="header_tool_left">
+  <div class="header-tool-left">
     <!-- 点击展开收起的按钮 -->
-    <Hamburger />
+    <CollapseIcon />
     <!-- 面包屑,在移动端状态下不显示 -->
-    <Breadcrumb v-if="device != 'mobile' && themeConfig.isShowBreadcrumb" />
+    <Breadcrumb v-if="isShow" />
   </div>
 </template>
 
 <script setup lang="ts" name="ToolBarLeft">
+import CollapseIcon from "./components/CollapseIcon.vue";
 import Breadcrumb from "./components/Breadcrumb.vue";
-import Hamburger from "./components/Hamburger.vue";
-import { useGlobalStore } from "@/store";
-import { useAppStore } from "@/store/modules/app";
 import { computed } from "vue";
-
+import { useGlobalStore } from "@/store";
+import { useResize } from "@/hooks/useResize";
 const globalStore = useGlobalStore();
 const themeConfig = computed(() => globalStore.themeConfig);
-
-const appStore = useAppStore();
-const device = computed(() => appStore.device); // 设备
+const { windowWidth } = useResize();
+const isShow = computed(
+  () => windowWidth.value > 992 && themeConfig.value.isShowBreadcrumb
+);
 </script>
 
 <style scoped lang="scss">
-.header_tool_left {
+.header-tool-left {
   display: flex;
-  justify-content: center;
   align-items: center;
+  height: 100%;
 }
 </style>

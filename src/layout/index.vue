@@ -6,15 +6,13 @@
 <script setup lang="ts" name="Layout">
 import ThemeDrawer from "./components/ThemeDrawer/index.vue";
 import { useGlobalStore } from "@/store";
-import { computed, defineAsyncComponent, reactive, type Component } from "vue";
+import { computed, defineAsyncComponent, type Component } from "vue";
 
 const globalStore = useGlobalStore();
 const themeConfig = computed(() => globalStore.themeConfig);
 
 const isLayout: { [key: string]: Component } = {
-  vertical: defineAsyncComponent(
-    () => import("@/layout/LayoutVertical/index.vue")
-  ),
+  vertical: defineAsyncComponent(() => import("@/layout/LayoutVertical/index.vue"))
 };
 </script>
 

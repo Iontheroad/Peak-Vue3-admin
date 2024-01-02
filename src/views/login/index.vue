@@ -1,70 +1,120 @@
 <template>
   <div class="login-container">
     <div class="container">
-      <div class="drop">
+      <div
+        class="drop"
+        :class="{ register: actionType == 'register', forget: actionType == 'forget' }"
+      >
         <div class="content">
-          <h2>{{ getTranslateLanguage("login.title") }}</h2>
+          <h2>Peak Blog Admin</h2>
           <form>
             <div class="inputBox">
-              <input
-                type="text"
-                :placeholder="getTranslateLanguage('login.username')"
-                v-model="formData.username"
-              />
+              <input type="text" v-model="formData.username" />
             </div>
             <div class="inputBox">
-              <input
-                type="password"
-                :placeholder="getTranslateLanguage('login.password')"
-                v-model="formData.password"
-              />
+              <input type="password" v-model="formData.password" />
             </div>
-            <div class="inputBox" @click.prevent="clickLogin">
+            <div class="inputBox" @click.prevent="submit">
               <input
                 type="submit"
-                :value="getTranslateLanguage('login.login')"
+                :value="
+                  actionType == 'login'
+                    ? '登录'
+                    : actionType == 'register'
+                      ? '注册'
+                      : '修改'
+                "
               />
             </div>
           </form>
         </div>
       </div>
-      <!-- <a href="javascript:;" class="btns">Forget Password</a>
-      <a href="javascript:;" class="btns signup">Signup</a> -->
+      <div class="small-drop">
+        <a
+          v-if="['login', 'register'].includes(actionType)"
+          href="javascript:;"
+          class="btn forget"
+          @click="actionType = 'forget'"
+          >忘记密码
+        </a>
+        <a
+          v-if="['register', 'forget'].includes(actionType)"
+          href="javascript:;"
+          class="btn login"
+          @click="actionType = 'login'"
+        >
+          去登录
+        </a>
+        <a
+          v-if="['login', 'forget'].includes(actionType)"
+          href="javascript:;"
+          class="btn signup"
+          @click="actionType = 'register'"
+        >
+          注 册
+        </a>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts" name="Login">
+<script setup lang="ts">
+defineOptions({
+  name: "Login"
+})
 import { ElMessage } from "element-plus";
-import { useUserStore } from "@/store";
-import { reactive } from "vue";
+import { reqUserLogin, reqUserRegister } from "@/api/user";
 import { useRouter } from "vue-router";
-import { getTranslateLanguage } from "@/lang";
+import { useUserStore } from "@/store/modules/user";
+import { ref, reactive } from "vue";
 
-const userStore = useUserStore(); // 用户状态仓库
 const router = useRouter();
+const userStore = useUserStore();
+
+let actionType = ref("login");
 const formData = reactive({
-  username: "admin",
-  password: "123456",
+  username: "蒙毅",
+  password: "qwe123"
 });
 
-// 点击登录
-const clickLogin = async () => {
-  try {
-    let result = await userStore.login_actions(formData);
-    ElMessage.success({
-      showClose: true,
-      message: "登陆成功",
-    });
-    router.replace("/");
-  } catch (error) {
-    console.log(error as Error);
-    // ElMessage.error({
-    //   showClose: true,
-    //   message: (error as Error).message,
-    // });
+/**
+ * 提交
+ */
+const submit = () => {
+  if (actionType.value == "login") {
+    userLogin();
+  } else if (actionType.value == "register") {
+    userRegister();
   }
 };
+
+/**
+ * 用户登录
+ */
+async function userLogin() {
+  try {
+    let result = await reqUserLogin(formData);
+    // let { access_token, username, refresh_token } = result.data;
+    userStore.setToken(result.data);
+    ElMessage.success("登录成功");
+    router.push("/");
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+/**
+ * 注册用户
+ */
+async function userRegister() {
+  try {
+    await reqUserRegister(formData);
+    ElMessage.success("注册成功");
+    actionType.value = "login";
+  } catch (error) {
+    console.log(error);
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -76,27 +126,48 @@ const clickLogin = async () => {
   background: #eff0f4;
   .container {
     position: relative;
+
     // left: -80px;
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: wrap;
 
     // 大水滴
     .drop {
       position: relative;
       width: 350px;
       height: 350px;
-      box-shadow: inset 20px 20px 20px rgba(0, 0, 0, 0.05),
-        25px 35px 20px rgba(0, 0, 0, 0.05), 25px 30px 30px rgba(0, 0, 0, 0.05),
-        inset -20px -20px 25px rgba(255, 255, 255, 0.9);
+      box-shadow:
+        inset 20px 20px 20px rgb(0 0 0 / 5%),
+        25px 35px 20px rgb(0 0 0 / 5%),
+        25px 30px 30px rgb(0 0 0 / 5%),
+        inset -20px -20px 25px rgb(255 255 255 / 90%);
       transition: 0.5s;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: 52% 48% 33% 67% / 38% 45% 55% 62%;
+      &.register {
+        background: #46c4fa;
+        box-shadow:
+          inset 10px 10px 10px rgb(1 180 255 / 5%),
+          15px 25px 10px rgb(1 180 255 / 10%),
+          15px 20px 20px rgb(1 180 255 / 10%),
+          inset -10px -10px 15px 10px rgb(255 255 255 / 50%);
+      }
+      &.forget {
+        background: #c61dff;
+        box-shadow:
+          inset 10px 10px 10px rgb(190 1 254 / 5%),
+          15px 25px 10px rgb(190 1 254 / 10%),
+          15px 20px 20px rgb(190 1 254 / 10%),
+          inset -10px -10px 15px rgb(255 255 255 / 50%);
+      }
       &:hover {
         border-radius: 50%;
       }
+
       // 大水滴的两个小光点
       &::before {
         content: "";
@@ -106,7 +177,7 @@ const clickLogin = async () => {
         width: 35px;
         height: 35px;
         border-radius: 50%;
-        background: #fff;
+        background: #ffffff;
         opacity: 0.9;
       }
       &::after {
@@ -117,9 +188,10 @@ const clickLogin = async () => {
         width: 15px;
         height: 15px;
         border-radius: 50%;
-        background: #fff;
+        background: #ffffff;
         opacity: 0.9;
       }
+
       // 大水滴主体内容
       .content {
         position: relative;
@@ -132,10 +204,9 @@ const clickLogin = async () => {
         gap: 15px;
         h2 {
           position: relative;
-          color: #333;
+          color: #333333;
           font-size: 1.5em;
         }
-
         form {
           display: flex;
           flex-direction: column;
@@ -145,10 +216,11 @@ const clickLogin = async () => {
           .inputBox {
             position: relative;
             width: 225px;
-            box-shadow: inset 2px 5px 10px rgba(0, 0, 0, 0.1),
-              inset -2px -5px 10px rgba(255, 255, 255, 1),
-              15px 15px 10px rgba(0, 0, 0, 0.05),
-              15px 10px 15px rgba(0, 0, 0, 0.025);
+            box-shadow:
+              inset 2px 5px 10px rgb(0 0 0 / 10%),
+              inset -2px -5px 10px rgb(255 255 255 / 100%),
+              15px 15px 10px rgb(0 0 0 / 5%),
+              15px 10px 15px rgb(0 0 0 / 2.5%);
             border-radius: 25px;
             &::before {
               content: "";
@@ -158,7 +230,7 @@ const clickLogin = async () => {
               transform: translateX(-50%);
               width: 65%;
               height: 5px;
-              background: rgba(255, 255, 255, 0.5);
+              background: rgb(255 255 255 / 50%);
               border-radius: 5px;
             }
             input {
@@ -170,7 +242,7 @@ const clickLogin = async () => {
               font-size: 1em;
               padding: 10px 15px;
               &[type="submit"] {
-                color: #fff;
+                color: #ffffff;
                 text-transform: uppercase;
                 font-size: 1em;
                 cursor: pointer;
@@ -182,9 +254,10 @@ const clickLogin = async () => {
             &:last-child {
               width: 120px;
               background: #ff0f5b;
-              box-shadow: inset 2px 5px 10px rgba(0, 0, 0, 0.1),
-                15px 15px 10px rgba(0, 0, 0, 0.05),
-                15px 10px 15px rgba(0, 0, 0, 0.025);
+              box-shadow:
+                inset 2px 5px 10px rgb(0 0 0 / 10%),
+                15px 15px 10px rgb(0 0 0 / 5%),
+                15px 10px 15px rgb(0 0 0 / 2.5%);
               transition: 0.5s;
             }
             &:last-child:hover {
@@ -196,29 +269,20 @@ const clickLogin = async () => {
     }
 
     // 忘记密码和注册水滴
-    .btns {
+    .btn {
       position: absolute;
-      right: -120px;
-      bottom: 0;
-      width: 120px;
-      height: 120px;
-      background: #c61dff;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       text-decoration: none;
-      color: #fff;
+      color: #ffffff;
       line-height: 1.2em;
       letter-spacing: 0.1em;
       font-size: 0.8em;
       transition: 0.25s;
       text-align: center;
-      box-shadow: inset 10px 10px 10px rgba(190, 1, 254, 0.05),
-        15px 25px 10px rgba(190, 1, 254, 0.1),
-        15px 20px 20px rgba(190, 1, 254, 0.1),
-        inset -10px -10px 15px rgba(255, 255, 255, 0.5);
-      border-radius: 44% 56% 65% 35% / 57% 58% 42% 43%;
+
       // 小光点
       &::before {
         content: "";
@@ -228,9 +292,43 @@ const clickLogin = async () => {
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: #fff;
+        background: #ffffff;
         opacity: 0.45;
       }
+      &.forget {
+        right: -120px;
+        bottom: 0;
+        width: 120px;
+        height: 120px;
+        background: #c61dff;
+        border-radius: 44% 56% 65% 35% / 57% 58% 42% 43%;
+        box-shadow:
+          inset 10px 10px 10px rgb(190 1 254 / 5%),
+          15px 25px 10px rgb(190 1 254 / 10%),
+          15px 20px 20px rgb(190 1 254 / 10%),
+          inset -10px -10px 15px rgb(255 255 255 / 50%);
+      }
+
+      // 登录水滴
+      &.login {
+        bottom: 150px;
+        right: -120px;
+        width: 80px;
+        height: 80px;
+        background-color: #e0e1e5;
+        border-radius: 49% 51% 52% 48% / 63% 59% 41% 37%;
+        box-shadow:
+          inset 10px 10px 10px rgb(0 0 0 / 5%),
+          15px 25px 10px rgb(0 0 0 / 5%),
+          15px 20px 20px rgb(0 0 0 / 5%),
+          inset -10px -10px 15px rgb(255 255 255 / 90%);
+        &::before {
+          left: 20px;
+          width: 15px;
+          height: 15px;
+        }
+      }
+
       // 注册水滴
       &.signup {
         bottom: 150px;
@@ -239,10 +337,11 @@ const clickLogin = async () => {
         height: 80px;
         border-radius: 49% 51% 52% 48% / 63% 59% 41% 37%;
         background: #01b4ff;
-        box-shadow: inset 10px 10px 10px rgba(1, 180, 255, 0.05),
-          15px 25px 10px rgba(1, 180, 255, 0.1),
-          15px 20px 20px rgba(1, 180, 255, 0.1),
-          inset -10px -10px 15px rgba(255, 255, 255, 0.5);
+        box-shadow:
+          inset 10px 10px 10px rgb(1 180 255 / 5%),
+          15px 25px 10px rgb(1 180 255 / 10%),
+          15px 20px 20px rgb(1 180 255 / 10%),
+          inset -10px -10px 15px rgb(255 255 255 / 50%);
         &::before {
           left: 20px;
           width: 15px;
@@ -251,6 +350,21 @@ const clickLogin = async () => {
       }
       &:hover {
         border-radius: 50%;
+      }
+    }
+  }
+
+  // 媒体查询
+  @media only screen and (width <= 768px) {
+    .container {
+      flex-direction: column !important;
+      .small-drop {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+      }
+      .btn {
+        position: unset;
       }
     }
   }

@@ -5,7 +5,6 @@
 </template>
 
 <script setup lang="ts" name="ThemeSetting">
-// import { Tools } from "@element-plus/icons-vue";
 import SvgIcon from "@/components/SvgIcon/index.vue";
 import mittBus from "@/utils/mittBus";
 const openDrawer = () => {

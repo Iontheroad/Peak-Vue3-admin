@@ -5,22 +5,22 @@
 
 import { defineStore } from "pinia";
 import { PersistedStateOptions } from "pinia-plugin-persistedstate";
-import router from "@/routers";
+import router from "@/router";
 import { nextTick } from "vue";
 
 // tabsState 类型
-interface TabsState {
+export interface TabsState {
   tabsList: TabsItemType[];
   isReload: boolean;
   keepAliveList: string[];
 }
 
-interface TabsItemType {
+export interface TabsItemType {
   icon: string;
   title: string;
   path: string;
   name: string;
-  close: boolean;
+  isAffix: boolean;
 }
 
 export const useTabsStore = defineStore("tabsStore", {
@@ -28,7 +28,7 @@ export const useTabsStore = defineStore("tabsStore", {
     return {
       tabsList: [],
       isReload: true,
-      keepAliveList: [], // 缓存的路由
+      keepAliveList: [] // 缓存的路由
     };
   },
 
@@ -38,9 +38,9 @@ export const useTabsStore = defineStore("tabsStore", {
      * @param tabsItem
      */
     addTabs_actions(tabsItem: TabsItemType) {
-      if (this.tabsList.every((item) => item.name != tabsItem.name)) {
+      if (this.tabsList.every((item) => item.path != tabsItem.path)) {
         this.tabsList.push(tabsItem);
-        this.addKeepAliveItem_actions(tabsItem.name);
+        this.addKeepAliveItem_actions(tabsItem.path);
       }
     },
 
@@ -73,7 +73,7 @@ export const useTabsStore = defineStore("tabsStore", {
       // 保留当前项 和 固定项
       let routeNameList: string[] = []; // 记录
       this.tabsList = this.tabsList.filter((item) => {
-        if (item.name == routeName || !item.close) {
+        if (item.name == routeName || item.isAffix) {
           routeNameList.push(item.name);
           return item;
         }
@@ -86,9 +86,9 @@ export const useTabsStore = defineStore("tabsStore", {
      * 刷新当前页tab
      */
     refreshCurrentTab_actions(routeName: string) {
+      this.isReload = false;
+      this.removeKeepAliveItem_actions(routeName);
       setTimeout(() => {
-        this.isReload = false;
-        this.removeKeepAliveItem_actions(routeName);
         nextTick(() => {
           this.isReload = true;
           this.addKeepAliveItem_actions(routeName);
@@ -102,8 +102,7 @@ export const useTabsStore = defineStore("tabsStore", {
      */
     addKeepAliveItem_actions(itemName: string) {
       // 不存在就添加
-      !this.keepAliveList.includes(itemName) &&
-        this.keepAliveList.push(itemName);
+      !this.keepAliveList.includes(itemName) && this.keepAliveList.push(itemName);
     },
 
     /**
@@ -111,9 +110,7 @@ export const useTabsStore = defineStore("tabsStore", {
      * @param itemName 路由名称
      */
     removeKeepAliveItem_actions(itemName: string) {
-      this.keepAliveList = this.keepAliveList.filter(
-        (item) => item != itemName
-      );
+      this.keepAliveList = this.keepAliveList.filter((item) => item != itemName);
     },
 
     /**
@@ -122,7 +119,7 @@ export const useTabsStore = defineStore("tabsStore", {
      */
     resetKeepAliveList(keepAliveList: string[] = []) {
       this.keepAliveList = keepAliveList;
-    },
+    }
   },
 
   getters: {},
@@ -133,8 +130,8 @@ export const useTabsStore = defineStore("tabsStore", {
       {
         key: "tabsStore",
         storage: localStorage,
-        paths: [],
-      },
-    ],
-  } as PersistedStateOptions,
+        paths: []
+      }
+    ]
+  } as PersistedStateOptions
 });

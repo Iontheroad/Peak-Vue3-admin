@@ -19,28 +19,5 @@ export const localStorage = {
   // 移除全部永久缓存
   clear() {
     window.localStorage.clear();
-  },
+  }
 };
-
-/**
- * 侧边栏状态(显示/隐藏)存储本地
- * opened | closed(收起和半收起)
- */
-const SidebarStatusKey = "sidebarStatus";
-export function getSidebarStatus() {
-  return localStorage.get(SidebarStatusKey);
-}
-export function setSidebarStatus(sidebarStatus: string) {
-  localStorage.set(SidebarStatusKey, sidebarStatus);
-}
-
-/**
- * 布局大小
- */
-const SizeKey = "size";
-export function getSize() {
-  return localStorage.get(SizeKey);
-}
-export function setSize(size: string) {
-  localStorage.set(SizeKey, size);
-}
