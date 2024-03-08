@@ -4,7 +4,7 @@
       <!-- 根菜单信息 -->
       <template #title>
         <el-icon v-if="subItem?.meta?.icon">
-          <SvgIcon :icon-name="subItem?.meta?.icon as string" />
+          <SvgIcon :icon-name="subItem?.meta?.icon" />
         </el-icon>
         <span v-if="subItem?.meta?.title">
           {{ subItem.meta.title }}

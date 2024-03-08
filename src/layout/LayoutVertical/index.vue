@@ -58,8 +58,7 @@ watch(windowWidth, () => appStore.toggleSidebar(isCollapse.value), { immediate: 
 
 const activeMenu = computed<string>(() => {
   const { meta, path } = route;
-  if (meta?.activeMenu) return meta.activeMenu as string;
-  return path;
+  return meta?.activeMenu || path;
 });
 </script>
 
