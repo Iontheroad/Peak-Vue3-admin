@@ -1,37 +1,37 @@
 <template>
   <el-dropdown trigger="click" :teleported="false">
     <el-button size="small" type="primary">
-      <span>{{ "tabs.more" }}</span>
+      <span>{{ $t("tabs.more") }}</span>
       <el-icon class="el-icon--right"><ArrowDown /></el-icon>
     </el-button>
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item @click="refresh">
           <el-icon><Refresh /></el-icon>
-          {{ "tabs.refresh" }}
+          {{ $t("tabs.refresh") }}
         </el-dropdown-item>
         <el-dropdown-item @click="maximize" disabled>
           <el-icon><FullScreen /></el-icon>
-          {{ "tabs.maximize" }}
+          {{ $t("tabs.maximize") }}
         </el-dropdown-item>
         <el-dropdown-item divided @click="closeCurrentTab">
           <el-icon><Remove /></el-icon>
-          {{ "tabs.closeCurrent" }}
+          {{ $t("tabs.closeCurrent") }}
         </el-dropdown-item>
         <el-dropdown-item @click="closeOtherTab">
           <el-icon><CircleClose /></el-icon>
-          {{ "tabs.closeOther" }}
+          {{ $t("tabs.closeOther") }}
         </el-dropdown-item>
         <el-dropdown-item @click="closeAllTab">
           <el-icon><FolderDelete /></el-icon>
-          {{ "tabs.closeAll" }}
+          {{ $t("tabs.closeAll") }}
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
   </el-dropdown>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="MoreButton">
 // import { computed } from "vue";
 import {
   ArrowDown,
@@ -91,6 +91,4 @@ const closeAllTab = () => {
 };
 </script>
 
-<style scoped lang="scss">
-// @import "../index.scss";
-</style>
+<style scoped lang="scss"></style>

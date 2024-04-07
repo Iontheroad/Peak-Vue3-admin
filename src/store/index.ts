@@ -9,6 +9,7 @@
 import { createPinia, defineStore } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import type { PersistedStateOptions } from "pinia-plugin-persistedstate";
+import { getLanguage } from "@/utils";
 import { useUserStore } from "./modules/user";
 import { DEFAULT_PRIMARY } from "@/config/config";
 
@@ -34,7 +35,7 @@ interface ThemeConfigProps {
 const useGlobalStore = defineStore("globalStore", {
   state: (): GlobalType => ({
     elementSize: "default",
-    language: "en", // 获取语言
+    language: getLanguage(), // 获取语言
     /* 主体配置 */
     themeConfig: {
       // 布局切换 ==>  纵向：vertical | 经典：classic | 横向：transverse | 分栏：columns

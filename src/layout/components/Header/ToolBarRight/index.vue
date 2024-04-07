@@ -4,6 +4,8 @@
       <!-- 主题设置 -->
       <ThemeSetting />
       <!-- 中英互译 -->
+      <!-- // TODO : 切换语言组件 -->
+      <Language id="language" />
     </div>
     <!-- 头像部分 -->
     <Avatar />
@@ -11,6 +13,7 @@
 </template>
 
 <script setup lang="ts" name="ToolBarRight">
+import Language from "./components/Language.vue";
 import Avatar from "./components/Avatar.vue";
 import ThemeSetting from "./components/ThemeSetting.vue";
 </script>
