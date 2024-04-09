@@ -29,6 +29,7 @@ export default {
     dashboard: "Home",
     logout: "Logout",
     document: "Document",
+    github: "Github",
     gitee: "Gitee"
   }
 };

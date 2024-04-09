@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "@/router";
 import pinia from "@/store";
-import i18n from "@/languages"; // 国际化
+import i18n from "@/languages/index"; // 国际化
 import "dayjs/locale/zh-cn"; // 日期国际化
 
 /* element */

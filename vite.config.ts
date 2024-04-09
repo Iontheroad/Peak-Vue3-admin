@@ -16,7 +16,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     base: env.VITE_PUBLIC_PATH,
     resolve: {
       alias: {
-        "@": resolve(__dirname, "./src")
+        "@": resolve(__dirname, "./src"),
+        "vue-i18n": "vue-i18n/dist/vue-i18n.cjs.js" // 清除i18n控制栏警告
       }
     },
     css: {

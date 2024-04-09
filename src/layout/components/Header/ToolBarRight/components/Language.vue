@@ -20,7 +20,9 @@ function handleSetLanguage(lang: "zh" | "en") {
 <template>
   <div class="language">
     <el-dropdown trigger="click" @command="handleSetLanguage">
-      <SvgIcon class="icon" icon-name="header-language" />
+      <span class="el-dropdown-link">
+        <SvgIcon class="icon" icon-name="header-language" />
+      </span>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item

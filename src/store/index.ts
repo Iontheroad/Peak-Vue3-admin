@@ -15,7 +15,7 @@ import { DEFAULT_PRIMARY } from "@/config/config";
 
 interface GlobalType {
   elementSize: "default" | "large" | "small";
-  language: string;
+  language: "zh" | "en";
   themeConfig: ThemeConfigProps;
 }
 interface ThemeConfigProps {
@@ -57,7 +57,7 @@ const useGlobalStore = defineStore("globalStore", {
      * 修改语言
      * @param language
      */
-    changeLanguage(language: string) {
+    changeLanguage(language: "zh" | "en") {
       this.language = language;
     },
 

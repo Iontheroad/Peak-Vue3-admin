@@ -29,6 +29,7 @@ export default {
     home: "首页",
     logout: "注销",
     document: "项目文档",
+    github: "GitHub",
     gitee: "码云"
   }
 };

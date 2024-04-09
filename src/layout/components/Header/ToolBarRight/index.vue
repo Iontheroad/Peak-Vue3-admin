@@ -4,8 +4,7 @@
       <!-- 主题设置 -->
       <ThemeSetting />
       <!-- 中英互译 -->
-      <!-- // TODO : 切换语言组件 -->
-      <Language id="language" />
+      <Language />
     </div>
     <!-- 头像部分 -->
     <Avatar />

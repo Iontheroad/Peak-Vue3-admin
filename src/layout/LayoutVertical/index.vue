@@ -56,7 +56,7 @@ const themeConfig = computed(() => globalStore.themeConfig);
 const { windowWidth, isCollapse } = useResize();
 watch(windowWidth, () => appStore.toggleSidebar(isCollapse.value), { immediate: true });
 
-const activeMenu = computed<string>(() => {
+const activeMenu = computed(() => {
   const { meta, path } = route;
   return meta?.activeMenu || path;
 });

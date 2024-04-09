@@ -22,15 +22,15 @@
     "@wangeditor/editor-for-vue": "^5.1.12",
     "axios": "^1.6.2",
     "dayjs": "^1.11.10",
-    "element-plus": "^2.6.0",
+    "element-plus": "^2.6.3",
     "md-editor-v3": "^4.9.0",
     "mitt": "^3.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
-    "vue": "^3.3.8",
-    "vue-i18n": "^9.11.0",
-    "vue-router": "^4.2.5"
+    "vue": "^3.4.21",
+    "vue-i18n": "^9.8.0",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@types/node": "^20.9.4",
