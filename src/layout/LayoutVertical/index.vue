@@ -11,6 +11,7 @@
           :default-active="activeMenu"
           :collapse="isCollapseMenu"
           :collapse-transition="false"
+          :unique-opened="false"
         >
           <SubMenu :menu-list="permissionStore.menubarList_getters" />
         </el-menu>

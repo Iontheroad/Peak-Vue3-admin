@@ -34,18 +34,18 @@ export const useTabsStore = defineStore("tabsStore", {
 
   actions: {
     /**
-     * 新增 tabs
+     * @description 新增tab
      * @param tabsItem
      */
     addTabs_actions(tabsItem: TabsItemType) {
-      if (this.tabsList.every((item) => item.path != tabsItem.path)) {
+      if (this.tabsList.every((item) => item.name != tabsItem.name)) {
         this.tabsList.push(tabsItem);
-        this.addKeepAliveItem_actions(tabsItem.path);
+        this.addKeepAliveItem_actions(tabsItem.name); // 缓存
       }
     },
 
     /**
-     * 删除tab
+     * @description 删除tab
      * @param routeName 路由别名
      * @param isCurrent 删除的是否是当前项
      */
@@ -66,13 +66,15 @@ export const useTabsStore = defineStore("tabsStore", {
     },
 
     /**
-     * 删除其他所有tab，只剩下当前tab和固定的tab
-     * @param routeName
+     * @description 删除其他所有tab，只剩下当前tab和固定的tab
+     *
+     * @param {String} [routeName] 路由别名
+     * @returns {void}
      */
-    closeMultipleTabs_actions(routeName?: string) {
-      // 保留当前项 和 固定项
+    closeMultipleTabs_actions(routeName?: string): void {
       let routeNameList: string[] = []; // 记录
       this.tabsList = this.tabsList.filter((item) => {
+        // 保留当前项 和 固定项
         if (item.name == routeName || item.isAffix) {
           routeNameList.push(item.name);
           return item;
@@ -83,7 +85,8 @@ export const useTabsStore = defineStore("tabsStore", {
     },
 
     /**
-     * 刷新当前页tab
+     * @description 刷新当前页
+     * @param routeName 路由别名
      */
     refreshCurrentTab_actions(routeName: string) {
       this.isReload = false;
@@ -97,24 +100,24 @@ export const useTabsStore = defineStore("tabsStore", {
     },
 
     /**
-     * 新增缓存路由
-     * @param itemName
+     * @description 新增缓存路由
+     * @param routeName 路由别名
      */
-    addKeepAliveItem_actions(itemName: string) {
+    addKeepAliveItem_actions(routeName: string) {
       // 不存在就添加
-      !this.keepAliveList.includes(itemName) && this.keepAliveList.push(itemName);
+      !this.keepAliveList.includes(routeName) && this.keepAliveList.push(routeName);
     },
 
     /**
-     * 删除指定缓存路由
-     * @param itemName 路由名称
+     * @description 删除指定缓存路由
+     * @param routeName 路由名称
      */
-    removeKeepAliveItem_actions(itemName: string) {
-      this.keepAliveList = this.keepAliveList.filter((item) => item != itemName);
+    removeKeepAliveItem_actions(routeName: string) {
+      this.keepAliveList = this.keepAliveList.filter((item) => item != routeName);
     },
 
     /**
-     * 重置缓存路由数据
+     * @description 重置缓存路由数据
      * @param keepAliveList
      */
     resetKeepAliveList(keepAliveList: string[] = []) {

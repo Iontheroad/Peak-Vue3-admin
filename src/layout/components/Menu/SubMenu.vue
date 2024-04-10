@@ -26,19 +26,43 @@
 </template>
 <script setup lang="ts" name="SubMenu">
 import { useRouter } from "vue-router";
-import { toRefs } from "vue";
-// 组件
 
-const router = useRouter();
-const props = defineProps<{
+defineProps<{
   menuList: Menu.MenuOptions[];
 }>();
 
-const { menuList } = toRefs(props);
-
+const router = useRouter();
 const handleClickMenu = (item: Menu.MenuOptions) => {
   if (item?.meta?.isLink) return window.open(item?.meta?.isLink.toString(), "_blank");
   router.push(item.path);
 };
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-sub-menu {
+  .el-sub-menu__title:hover {
+    color: var(--el-menu-hover-text-color);
+    background-color: transparent;
+  }
+  &.is-active > .el-sub-menu__title {
+    color: var(--el-menu-active-color);
+  }
+}
+.el-menu-item {
+  &:hover {
+    color: var(--el-menu-hover-text-color);
+  }
+  &.is-active {
+    color: var(--el-menu-active-color);
+    background-color: var(--el-menu-active-bg-color);
+    &::before {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 4px;
+      content: "";
+      background-color: var(--el-color-primary);
+    }
+  }
+}
+</style>

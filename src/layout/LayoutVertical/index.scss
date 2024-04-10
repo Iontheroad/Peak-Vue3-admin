@@ -14,11 +14,6 @@
     .el-menu {
       border-right: none;
       height: 100%;
-      .el-sub-menu.is-active {
-        .el-sub-menu__title {
-          color: var(--el-menu-active-color);
-        }
-      }
     }
 
     // 展开菜单栏
