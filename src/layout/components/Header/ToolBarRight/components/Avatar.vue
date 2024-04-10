@@ -2,7 +2,7 @@
   <el-dropdown class="user-container" trigger="click">
     <div class="user-info">
       <img :src="userInfo?.avatar + '?imageView2/1/w/80/h/80'" class="user-avatar" />
-      <span class="user-name">Peak<CaretBottom class="icon" /></span>
+      <span class="user-name">{{ userInfo?.realName }}<CaretBottom class="icon" /></span>
     </div>
     <template #dropdown>
       <el-dropdown-menu>
@@ -28,8 +28,8 @@ import { computed } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { CaretBottom } from "@element-plus/icons-vue";
-
 import { useUserStore } from "@/store/modules/user";
+import { reqUserLogout } from "@/api/user";
 const userStore = useUserStore();
 const router = useRouter();
 const userInfo = computed(() => userStore.userInfo);
@@ -44,11 +44,12 @@ function clickLogout() {
   })
     .then(async () => {
       try {
-        // await userStore.logout_actions();
+        await reqUserLogout();
         ElMessage.success({
           showClose: true,
           message: "退出成功"
         });
+        userStore.resetUser();
         router.replace("/login");
       } catch (error) {
         ElMessage({

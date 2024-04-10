@@ -4,29 +4,50 @@
 import { defineStore } from "pinia";
 import type { PersistedStateOptions } from "pinia-plugin-persistedstate";
 
+import { reqGetUserInfo } from "@/api/user";
+
 interface UserProps {
-  access_token: string;
-  refresh_token: string;
-  userInfo?: object;
+  authorization: string;
+  userInfo?: any;
 }
 
 export const useUserStore = defineStore({
   id: "peak-blog-user",
   state: (): UserProps => ({
-    access_token: "", // 访问令牌
-    refresh_token: "", // 刷新令牌
+    authorization: "",
     userInfo: {
-      avatar: "http://119.91.22.164:8085/images/11411538250643115avatar.jpg", // 头像
-      nickname: "Peak", // 昵称
-      perms: ["sys:user:edit", "sys:user:delete", "sys:user:add"], //权限字段
-      roles: ["admin"], // 角色
-      userId: "1" // 用户id
+      token: "",
+      userId: null,
+      username: "",
+      password: "",
+      realName: "",
+      avatar: "",
+      sex: "",
+      age: 0,
+      address: "",
+      phone: "",
+      email: "",
+      roles: [],
+      login_time: ""
     }
   }),
   actions: {
-    setToken({ access_token, refresh_token }: UserProps) {
-      this.access_token = access_token;
-      this.refresh_token = refresh_token;
+    setToken({ authorization }: UserProps) {
+      this.authorization = authorization;
+    },
+
+    /**
+     * 登录成功后 获取用户信息
+     * @returns
+     */
+    async getUserInfo() {
+      try {
+        let result = await reqGetUserInfo();
+        this.userInfo = result.data;
+        return Promise.resolve(true);
+      } catch (error) {
+        return Promise.reject(false);
+      }
     },
 
     /**
@@ -34,15 +55,8 @@ export const useUserStore = defineStore({
      */
     resetUser() {
       // 重置数据
-      this.access_token = "";
-      this.refresh_token = "";
-      this.userInfo = {
-        avatar: "", // 头像
-        nickname: "", // 昵称
-        perms: [], //权限字段
-        roles: [], // 角色
-        userId: "" // 用户id
-      };
+      this.authorization = "";
+      this.userInfo = {};
     }
   },
   getters: {},

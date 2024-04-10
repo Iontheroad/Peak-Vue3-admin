@@ -61,9 +61,9 @@
 <script setup lang="ts">
 defineOptions({
   name: "Login"
-})
+});
 import { ElMessage } from "element-plus";
-import { reqUserLogin, reqUserRegister } from "@/api/user";
+import { reqUserLogin } from "@/api/user";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/modules/user";
 import { ref, reactive } from "vue";
@@ -73,8 +73,8 @@ const userStore = useUserStore();
 
 let actionType = ref("login");
 const formData = reactive({
-  username: "蒙毅",
-  password: "qwe123"
+  username: "peak",
+  password: "123456"
 });
 
 /**
@@ -84,7 +84,7 @@ const submit = () => {
   if (actionType.value == "login") {
     userLogin();
   } else if (actionType.value == "register") {
-    userRegister();
+    // 注册
   }
 };
 
@@ -94,23 +94,10 @@ const submit = () => {
 async function userLogin() {
   try {
     let result = await reqUserLogin(formData);
-    // let { access_token, username, refresh_token } = result.data;
     userStore.setToken(result.data);
     ElMessage.success("登录成功");
+    userStore.getUserInfo(); // 获取用户信息
     router.push("/");
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-/**
- * 注册用户
- */
-async function userRegister() {
-  try {
-    await reqUserRegister(formData);
-    ElMessage.success("注册成功");
-    actionType.value = "login";
   } catch (error) {
     console.log(error);
   }

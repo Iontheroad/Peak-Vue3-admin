@@ -3,8 +3,9 @@
  *     通过用户的角色信息拿到最终的 异步路由菜单
  */
 import { defineStore } from "pinia";
-import mockMenuList from "@/mocks/menu-list.json";
+import { reqGetMenuTree } from "@/api/menu";
 const modules = import.meta.glob("@/views/**/*.vue");
+
 export const usePermissionStore = defineStore({
   id: "peak-permission",
   state: () => ({
@@ -18,8 +19,8 @@ export const usePermissionStore = defineStore({
      */
     async getListRoutes_action() {
       try {
-        this.menuList = mockMenuList;
-
+        let result = await reqGetMenuTree();
+        this.menuList = result.data;
         return Promise.resolve(this.menuList);
       } catch (error) {
         return Promise.reject(error);

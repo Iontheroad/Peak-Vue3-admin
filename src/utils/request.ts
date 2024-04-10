@@ -5,7 +5,6 @@ import { ElMessage } from "element-plus";
 import { useUserStore } from "@/store/modules/user";
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from "axios";
 import router from "@/router";
-import { reqRefreshToken } from "@/api/user";
 
 interface ICodeMessage {
   [propName: number]: string;
@@ -27,22 +26,12 @@ const StatusCodeMessage: ICodeMessage = {
   504: "网络超时(504)"
 };
 
-declare module "axios" {
-  export interface CreateAxiosDefaults {
-    __isRefreshToken: boolean;
-  }
-  export interface AxiosRequestConfig {
-    __isRefreshToken?: boolean;
-  }
-}
-
 // 1.创建实例
 const service: AxiosInstance = axios.create({
   baseURL: import.meta.env.VITE_API_URL, // 默认地址请求地址，可在 .env.*** 文件中修改
   timeout: 50000, // 设置超时时间（10s）
-  withCredentials: true, // 跨域时候允许携带凭证
+  withCredentials: true // 跨域时候允许携带凭证
   // headers: { "Content-Type": "application/json;charset=utf-8" }, // 自定义请求头
-  __isRefreshToken: false // 是否是刷新token 请求
 });
 
 // 2.请求拦截器
@@ -54,9 +43,9 @@ service.interceptors.request.use(
     }
     // 获取用户token
     const userStore = useUserStore();
-    if (userStore.access_token && !config?.__isRefreshToken) {
+    if (userStore.authorization) {
       // token 添加到请求头 Bearer
-      config.headers.Authorization = `${userStore.access_token}`;
+      config.headers.Authorization = `${userStore.authorization}`;
     }
     return config;
   },
@@ -76,24 +65,18 @@ service.interceptors.response.use(
   },
   async (error: AxiosError) => {
     // 捕获错误
-    const { config, response } = error;
+    const { response } = error;
     const { code, message, msg } = response?.data as {
       code: number;
       message?: string;
       msg?: string;
     };
 
-    // 1. access_token 过期的单独处理
-    if ([401].includes(code) && !config?.__isRefreshToken) {
-      // 2. 请求接口刷新access_token
-      let isSuccess = await refreshToken();
-      // 3. 是否刷新成功
-      if (isSuccess) {
-        // 3.1 刷新成功，重新发起失败的请求
-        let resp = await service.request(config!);
-        return resp; // 3.2 拿到重新发起的请求结果并发返回
-      }
-      // 4. 刷新失败, 抛出失败请求的错误
+    // authorization 过期的单独处理
+    if ([401].includes(code)) {
+      const userStore = useUserStore();
+      userStore.resetUser(); // 清空 token
+      router.replace("/login"); // 跳转登录页
       return Promise.reject(
         new Error(msg || message || StatusCodeMessage[code] || error.message)
       );
@@ -107,36 +90,6 @@ service.interceptors.response.use(
     );
   }
 );
-
-/**
- * 刷新 access_token
- */
-let refreshPromise: Promise<any> | null = null;
-function refreshToken() {
-  if (refreshPromise) return refreshPromise; // 刷新中，直接返回
-
-  refreshPromise = new Promise(async (resolve) => {
-    const userStore = useUserStore();
-    try {
-      const result = await reqRefreshToken({
-        headers: {
-          refresh_token: userStore.refresh_token
-        },
-        __isRefreshToken: true // 标记为刷新token请求
-      });
-
-      userStore.access_token = result.data.access_token; // 更新 access_token
-      resolve(true);
-    } catch (error) {
-      userStore.resetUser(); // 清空 token
-      router.replace("/login"); // 跳转登录页
-      resolve(false);
-    } finally {
-      refreshPromise = null; // 重置刷新状态
-    }
-  });
-  return refreshPromise;
-}
 
 // 导出 axios 实例
 export default service;

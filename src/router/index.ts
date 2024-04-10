@@ -59,7 +59,7 @@ router.beforeEach(async (to, from, next) => {
   // 3.是否访问的登录页
   if (to.path.toLocaleLowerCase().startsWith("/login")) {
     // 有Token就在当前页
-    if (userStore.access_token) return next(from.fullPath);
+    if (userStore.authorization) return next(from.fullPath);
     // 没有token重定向到登录页,
     // 清空路由
     return next();
@@ -69,7 +69,7 @@ router.beforeEach(async (to, from, next) => {
   if (ROUTE_WHITE_LIST.includes(to.path)) return next();
 
   // 5.判断是否有Token , 没有重定向到登录页
-  if (!userStore.access_token) return next({ path: "/login", replace: true });
+  if (!userStore.authorization) return next({ path: "/login", replace: true });
 
   // 6.判断是否有菜单列表，没有重新请求菜单
   const permissionStore = usePermissionStore();
