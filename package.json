@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
+    "@photo-sphere-viewer/core": "^5.7.2",
+    "@photo-sphere-viewer/markers-plugin": "5.7.2-fix.1",
     "@vueuse/core": "^10.7.0",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-vue": "^5.1.12",

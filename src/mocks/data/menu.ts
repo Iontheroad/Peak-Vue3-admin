@@ -219,6 +219,44 @@ export const menuList = [
         }
       }
     ]
+  },
+  {
+    path: "/panorama",
+    name: "Panorama",
+    redirect: "/panorama/photo-sphere-viewer",
+    meta: {
+      title: "全景图",
+      icon: "menu-panorama",
+      roles: ["admin", "common"],
+      activeMenu: "/panorama",
+      isHidden: false,
+      isLink: false,
+      isFull: false,
+      isAffix: false,
+      isKeepAlive: false,
+      isBreadcrumbHidden: false,
+      isAlwaysShow: false
+    },
+    children: [
+      {
+        path: "/panorama/photo-sphere-viewer",
+        name: "photo-sphere-viewer",
+        component: "/panorama/photo-sphere-viewer/index",
+        meta: {
+          title: "PhotoSphereViewer",
+          icon: "menu-panorama",
+          roles: ["admin", "common"],
+          activeMenu: "/panorama/photo-sphere-viewer",
+          isHidden: false,
+          isLink: false,
+          isFull: false,
+          isAffix: false,
+          isKeepAlive: false,
+          isBreadcrumbHidden: false,
+          isAlwaysShow: false
+        }
+      }
+    ]
   }
 ];
 export default [
