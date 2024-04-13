@@ -1,16 +1,18 @@
 ## 简介
 
-Peak-Vue3-Admin 是一个以 vue-admin-template 为基础框架升级，整合了各种后台项目的优点对移动端有一定的适配，并对项目整体进行了大量逻辑、结构、样式的重构和梳理，具备了一定规范的模块化开发，项目使用了 Vite3、Vue3、TypeScript、Pinia、Element-Plus 等目前最新技术栈开发，基于 mock 实现本地数据模拟具备规范接口请求，本项目对代码进行了大量的代码说明以及对样式的分析和注释，大大降低了开发和学习的成本，既可以学习又可以基于模板功能二次开发。
+Peak-Vue3-Admin 一个功能简洁的免费开源的后台模板, 基于 Vite5 + Vue3.x + Setup + TypeScript + Element-Plus + Pinia + Mockjs 等目前最新技术栈开发, 参考了各种后台项目的优点并对移动端进行了适配，对项目整体逻辑、结构、样式重构梳理，具备了一定规范的模块化开发。本项目对代码进行了友好的注释，大大降低了开发和学习的成本，既可以学习又可以基于模板功能二次开发。
 
 ## 功能
 
-- 使用 Vite3 构建项目、Vue3 + TypeScript 并使用了 setup 语法糖方式书写
-- 支持 i18n 国际化、页面结构主题配置等
-- 完备的登录流程以及用户的权限校验、动态路由权限拦截、页面按钮权限
-- 本地 mock 数据，高效规范开发
-- ThreeJS 加载 fbx 模型组件
-- 表格单行校验和统一校验,后续会增加结合表单等动态校验场景
+- 使用 Vite5 构建项目、Vue3.x + TypeScript 并使用了 setup 语法糖方式书写
+- 支持 i18n 国际化、页面结构主题色配置等
+- 集成 Prettier、 ESLint、Stylelint 代码规范
+- 实现 VueRouter 配置动态路由(扁平和嵌套两种注入方式)、页面按钮权限, KeepAlive 组件实现页面缓存
+- 各种业务级自定义指令和功能函数
+- 基于ThreeJS 加载 fbx 模型组件
+- 基于业务功能场景的各种表格组件功能实现
 - 仿掘金评论区结构(模拟评论区所需数据结构)
+- 全景图实现方案(photo-sphere-viewer 或 Krpano)
 - 拖动组件，ECharts 可视化图表封装切换
 - 功能模块不断迭代增加...
 
@@ -29,15 +31,15 @@ Peak-Vue3-Admin 是一个以 vue-admin-template 为基础框架升级，整合�
 
 ```shell
 git clone https://gitee.com/Iontheroad/peak-vue3-admin.git
-npm install
-npm run dev
+pnpm install
+pnpm dev
 ```
 
 ## 分支管理
 
 **处于开发状态，预览项目请切换 dev_zgf**
 
-- main: 最终预览版(代码相对 dev_zgf 落后较大)
+- main: 主分支(代码相对 dev_zgf 落后较大)
 - dev_zgf: 功能开发迭代分支(最新)
 - pages: 静态资源部署
 
