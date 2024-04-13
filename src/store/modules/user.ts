@@ -3,6 +3,7 @@
  */
 import { defineStore } from "pinia";
 import type { PersistedStateOptions } from "pinia-plugin-persistedstate";
+import { useTabsStore } from "./tabs";
 
 import { reqGetUserInfo } from "@/api/user";
 
@@ -57,6 +58,9 @@ export const useUserStore = defineStore({
       // 重置数据
       this.authorization = "";
       this.userInfo = {};
+
+      const tabsStore = useTabsStore();
+      tabsStore.resetTabs_actions(); // 清空缓存的tabs和路由
     }
   },
   getters: {},

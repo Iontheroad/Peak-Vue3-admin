@@ -85,6 +85,14 @@ export const useTabsStore = defineStore("tabsStore", {
     },
 
     /**
+     * @description 重置 tabs
+     */
+    resetTabs_actions() {
+      this.tabsList = [];
+      this.resetKeepAliveList();
+    },
+
+    /**
      * @description 刷新当前页
      * @param routeName 路由别名
      */
