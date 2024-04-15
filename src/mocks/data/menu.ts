@@ -221,6 +221,44 @@ export const menuList = [
     ]
   },
   {
+    path: "/func",
+    name: "Func",
+    redirect: "/func/three",
+    meta: {
+      title: "功能组件",
+      icon: "menu-function",
+      roles: ["admin", "common"],
+      activeMenu: "/func",
+      isHidden: false,
+      isLink: false,
+      isFull: false,
+      isAffix: false,
+      isKeepAlive: false,
+      isBreadcrumbHidden: false,
+      isAlwaysShow: false
+    },
+    children: [
+      {
+        path: "/func/three",
+        name: "three",
+        component: "/func/three/index",
+        meta: {
+          title: "Three",
+          icon: "menu-function",
+          roles: ["admin", "common"],
+          activeMenu: "/func/three",
+          isHidden: false,
+          isLink: false,
+          isFull: false,
+          isAffix: false,
+          isKeepAlive: false,
+          isBreadcrumbHidden: false,
+          isAlwaysShow: false
+        }
+      }
+    ]
+  },
+  {
     path: "/panorama",
     name: "Panorama",
     redirect: "/panorama/photo-sphere-viewer",
