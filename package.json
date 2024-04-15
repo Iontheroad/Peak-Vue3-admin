@@ -34,7 +34,8 @@
     "three": "^0.163.0",
     "vue": "^3.4.21",
     "vue-i18n": "^9.8.0",
-    "vue-router": "^4.3.0"
+    "vue-router": "^4.3.0",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@types/mockjs": "^1.0.10",

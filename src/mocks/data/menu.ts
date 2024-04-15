@@ -255,6 +255,24 @@ export const menuList = [
           isBreadcrumbHidden: false,
           isAlwaysShow: false
         }
+      },
+      {
+        path: "dragTask",
+        name: "DragTask",
+        component: "/func/dragTask/index",
+        meta: {
+          title: "拖拽任务",
+          icon: "menu-function-move",
+          roles: ["admin", "common"],
+          activeMenu: "/func/three",
+          isHidden: false,
+          isLink: false,
+          isFull: false,
+          isAffix: false,
+          isKeepAlive: false,
+          isBreadcrumbHidden: false,
+          isAlwaysShow: false
+        }
       }
     ]
   },
