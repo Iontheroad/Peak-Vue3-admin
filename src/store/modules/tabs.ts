@@ -16,11 +16,9 @@ export interface TabsState {
 }
 
 export interface TabsItemType {
-  icon: string;
-  title: string;
   path: string;
   name: string;
-  isAffix: boolean;
+  meta: Menu.MenuMeta;
 }
 
 export const useTabsStore = defineStore("tabsStore", {
@@ -75,7 +73,7 @@ export const useTabsStore = defineStore("tabsStore", {
       let routeNameList: string[] = []; // 记录
       this.tabsList = this.tabsList.filter((item) => {
         // 保留当前项 和 固定项
-        if (item.name == routeName || item.isAffix) {
+        if (item.name == routeName || item.meta.isAffix) {
           routeNameList.push(item.name);
           return item;
         }

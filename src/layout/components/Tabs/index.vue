@@ -9,15 +9,15 @@
       <el-tab-pane
         v-for="item in tabsList"
         :key="item.name"
-        :label="item.title"
+        :label="item.meta.title"
         :name="item.name"
-        :closable="!item.isAffix"
+        :closable="!item.meta.isAffix"
       >
         <template #label>
-          <el-icon v-show="item.icon && themeConfig.isShowTabsIcon">
-            <SvgIcon :icon-name="item.icon" />
+          <el-icon v-show="item.meta.icon && themeConfig.isShowTabsIcon">
+            <SvgIcon :icon-name="item.meta.icon" />
           </el-icon>
-          {{ item.title }}
+          {{ item.meta.title }}
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -31,7 +31,7 @@ import MoreButton from "./MoreButton.vue";
 import { computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-import { useTabsStore, TabsItemType } from "@/store/modules/tabs.ts";
+import { useTabsStore, type TabsItemType } from "@/store/modules/tabs.ts";
 import { usePermissionStore } from "@/store/modules/permission";
 import { useGlobalStore } from "@/store";
 
@@ -48,18 +48,18 @@ const tabsActive = computed((): string => route.name as string); // 记录当前
 watch(
   () => route.fullPath,
   () => {
-    if (route.meta.isFull || route.meta.isLink || route.meta.isHidden) return;
+    const { name, fullPath, meta } = route;
+    if (meta.isFull || meta.isLink || meta.isHidden) return;
+
     let tabsItem: TabsItemType = {
-      icon: route.meta.icon as string,
-      title: route.meta.title as string,
-      path: route.fullPath,
-      name: route.name as string,
-      isAffix: route?.meta?.isAffix as boolean
+      path: fullPath,
+      name: name as string,
+      meta: meta as unknown as Menu.MenuMeta
     };
     tabsStore.addTabs_actions(tabsItem);
   },
   {
-    immediate: true
+    // immediate: true
   }
 );
 
@@ -72,15 +72,9 @@ onMounted(() => {
  */
 const initTabs = () => {
   permissionStore.flatMenubarList_getters.forEach((item) => {
-    if (item.meta?.isAffix && !item.meta?.isHidden && !item.meta?.isFull) {
-      let tabsItem = {
-        icon: item.meta.icon,
-        title: item.meta.title,
-        path: item.path,
-        name: item.name,
-        isAffix: item.meta.isAffix
-      };
-      tabsStore.addTabs_actions(tabsItem);
+    const { isAffix, isHidden, isFull } = item.meta || {};
+    if (isAffix && !isHidden && !isFull) {
+      tabsStore.addTabs_actions(item);
     }
   });
 };

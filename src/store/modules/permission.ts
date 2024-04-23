@@ -49,8 +49,8 @@ export const usePermissionStore = defineStore({
     /**
      * 扁平化路由: 每个路由都是同级结构清晰,但是不能路由页面嵌套;
      * 用途:
-     *    tabs渲染;
-     *    可以用于用于添加动态路由=>扁平化添加动态路由;
+     *    tabs初始化数据;
+     *    用于添加动态路由=>扁平化添加动态路由;
      */
     flatMenubarList_getters: (state): Menu.MenuOptions[] =>
       getFlatMenuList(state.menuList)
