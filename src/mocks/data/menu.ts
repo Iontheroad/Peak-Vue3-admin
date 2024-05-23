@@ -257,7 +257,7 @@ export const menuList = [
         }
       },
       {
-        path: "dragTask",
+        path: "/func/dragTask",
         name: "DragTask",
         component: "/func/dragTask/index",
         meta: {
@@ -265,6 +265,23 @@ export const menuList = [
           icon: "menu-function-move",
           roles: ["admin", "common"],
           activeMenu: "/func/three",
+          isHidden: false,
+          isLink: false,
+          isFull: false,
+          isAffix: false,
+          isKeepAlive: false,
+          isBreadcrumbHidden: false,
+          isAlwaysShow: false
+        }
+      },
+      {
+        path: "/func/ocr",
+        name: "Ocr",
+        component: "/func/ocr/index",
+        meta: {
+          title: "OCR文字",
+          icon: "menu-function-move",
+          roles: ["admin", "common"],
           isHidden: false,
           isLink: false,
           isFull: false,

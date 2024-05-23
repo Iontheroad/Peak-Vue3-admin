@@ -37,7 +37,7 @@
   "[less]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "cSpell.words": ["persistedstate", "stylelint"],
+  "cSpell.words": ["persistedstate", "stylelint", "tesseract"],
   "prettier.configPath": "",
   "prettier.enable": true
 }
