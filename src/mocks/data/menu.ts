@@ -290,6 +290,23 @@ export const menuList = [
           isBreadcrumbHidden: false,
           isAlwaysShow: false
         }
+      },
+      {
+        path: "/func/real-time-audio",
+        name: "RealTimeAudio",
+        component: "/func/real-time-audio/index",
+        meta: {
+          title: "实时语音识别",
+          icon: "menu-function-move",
+          roles: ["admin", "common"],
+          isHidden: false,
+          isLink: false,
+          isFull: false,
+          isAffix: false,
+          isKeepAlive: false,
+          isBreadcrumbHidden: false,
+          isAlwaysShow: false
+        }
       }
     ]
   },
@@ -340,7 +357,7 @@ export default [
     url: `/mock/menus/tree`,
     method: "get",
     timeout: 300,
-    response: ({ headers }) => {
+    response: ({ headers }: any) => {
       if (!headers?.authorization) return errorResponse(null, "请先登录", 401);
       return successResponse(menuList, "请求成功", 200);
     }

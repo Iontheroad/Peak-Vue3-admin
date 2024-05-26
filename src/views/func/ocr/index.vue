@@ -32,7 +32,7 @@
         </div>
       </div>
       <div class="itemBox">
-        <div style="with: 120px; text-align: left">图片：</div>
+        <div style="width: 120px; text-align: left">图片：</div>
         <el-image v-if="urlStr" :src="urlStr" style="width: 800px"></el-image>
       </div>
       <el-divider></el-divider>
